@@ -1,0 +1,29 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+venv/
+
+# Model files (large)
+*.task
+*.tflite
+*.pb
+
+# Generated videos
+*.mp4
+*.avi
+*.mov
+
+# Sample frames
+*.jpg
+*.png
+!README_assets/*.jpg
+
+# Downloaded videos
+/tmp/
+
+# Python cache
+.pytest_cache/
