@@ -19,7 +19,7 @@ from mediapipe.tasks.python import vision as mp_vision
 
 from boxing_analyzer.pattern_detector import PatternDetector, FrameAnalysis
 from boxing_analyzer.landmarks import LM, get_point, get_point_norm
-from boxing_analyzer.video_io import download_youtube, ensure_h264
+from boxing_analyzer.video_io import download_youtube, ensure_h264, is_youtube_url
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -167,10 +167,6 @@ def draw_fault_labels(frame, lms, analysis, w, h, side: str):
             cv2.putText(frame, label, (lx, ly), FONT, 0.38, (255, 255, 255), 1, cv2.LINE_AA)
         except Exception:
             pass
-
-
-def is_youtube_url(s):
-    return s.startswith("http") and ("youtube.com" in s or "youtu.be" in s)
 
 
 def run(args):
