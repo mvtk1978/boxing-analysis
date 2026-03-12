@@ -9,18 +9,19 @@ Structure:
   [3s]  Summary card — top 5 faults ranked
 """
 
-import os, argparse, textwrap
+import os, argparse, textwrap, tempfile
 import cv2
 import numpy as np
 import mediapipe as mp
 from mediapipe.tasks import python as mp_python
 from mediapipe.tasks.python import vision as mp_vision
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List
 
 from boxing_analyzer.pattern_detector import PatternDetector, FrameAnalysis, Fault
 from boxing_analyzer.landmarks import LM, get_point
-from boxing_analyzer.video_io import ensure_h264, download_youtube
+from boxing_analyzer.video_io import ensure_h264, download_youtube, is_youtube_url
 
 FONT      = cv2.FONT_HERSHEY_SIMPLEX
 FONT_BOLD = cv2.FONT_HERSHEY_DUPLEX
@@ -494,8 +495,12 @@ def _session_up_to(frame_data, up_to):
             for k, v in sorted(counts.items(), key=lambda x: -x[1])}
 
 
-def is_url(s):
-    return s.startswith("http") and ("youtube.com" in s or "youtu.be" in s)
+def _safe_output_path(path: str) -> str:
+    """Resolve output path and ensure it ends with .mp4 (prevents traversal)."""
+    resolved = str(Path(path).resolve())
+    if not resolved.endswith(".mp4"):
+        raise ValueError(f"Output path must end with .mp4: {path}")
+    return resolved
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -514,9 +519,26 @@ def main():
     p.add_argument("--fps",       type=float, default=30.0)
     args = p.parse_args()
 
+    # Validate numeric args
+    if not (1 <= args.slowmo <= 20):
+        p.error("--slowmo must be between 1 and 20")
+    if not (1 <= args.freeze <= 300):
+        p.error("--freeze must be between 1 and 300")
+    if not (1 <= args.highlights <= 20):
+        p.error("--highlights must be between 1 and 20")
+    if args.start < 0:
+        p.error("--start must be >= 0")
+    if args.duration is not None and args.duration <= 0:
+        p.error("--duration must be > 0")
+
+    # Validate and resolve output path
+    args.output = _safe_output_path(args.output)
+
     src = args.source
-    if is_url(src):
+    if is_youtube_url(src):
         src = download_youtube(src)
+    elif not os.path.isfile(src):
+        p.error(f"Source file not found: {src}")
     src = ensure_h264(src)
 
     cap   = cv2.VideoCapture(src)
@@ -579,59 +601,53 @@ def main():
 
     # Build output: intro + reel + summary
     print(f"\n[Rendering] → {args.output}")
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    writer = cv2.VideoWriter(args.output, fourcc, fps, (OUT_W, OUT_H))
 
-    # Intro card
-    intro_frames = make_intro_card(args.title, args.subtitle,
-                                   int(fps * 2.5), fps)
-    for f in intro_frames:
-        writer.write(f)
-
-    writer.release()
-
-    # Main reel (appended via separate render call)
-    tmp_reel = args.output.replace(".mp4", "_tmp_reel.mp4")
-    render(all_frames, highlights, tmp_reel, fps, ow, oh,
-           slowmo=args.slowmo, freeze_n=args.freeze, hold_n=args.freeze)
-
-    # Summary card
-    tmp_summary = args.output.replace(".mp4", "_tmp_summary.mp4")
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    writer = cv2.VideoWriter(tmp_summary, fourcc, fps, (OUT_W, OUT_H))
-    for f in make_summary_card(session, int(fps * 4)):
-        writer.write(f)
-    writer.release()
-
-    # Concat all parts with ffmpeg
+    # Use a secure temp directory for all intermediate files
     import subprocess
-    list_file = args.output.replace(".mp4", "_parts.txt")
-    with open(list_file, "w") as f:
-        intro_tmp = args.output.replace(".mp4", "_tmp_intro.mp4")
-        # Write intro from writer above — re-render
+    tmp_dir = tempfile.mkdtemp(prefix="boxing_reel_")
+    tmp_intro   = os.path.join(tmp_dir, "intro.mp4")
+    tmp_reel    = os.path.join(tmp_dir, "reel.mp4")
+    tmp_summary = os.path.join(tmp_dir, "summary.mp4")
+    list_file   = os.path.join(tmp_dir, "parts.txt")
+
+    try:
+        # Intro card
+        intro_frames = make_intro_card(args.title, args.subtitle,
+                                       int(fps * 2.5), fps)
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        w2 = cv2.VideoWriter(intro_tmp, fourcc, fps, (OUT_W, OUT_H))
-        for fr in make_intro_card(args.title, args.subtitle, int(fps * 2.5), fps):
+        w2 = cv2.VideoWriter(tmp_intro, fourcc, fps, (OUT_W, OUT_H))
+        for fr in intro_frames:
             w2.write(fr)
         w2.release()
-        f.write(f"file '{os.path.abspath(intro_tmp)}'\n")
-        f.write(f"file '{os.path.abspath(tmp_reel)}'\n")
-        f.write(f"file '{os.path.abspath(tmp_summary)}'\n")
 
-    subprocess.run([
-        "ffmpeg", "-y", "-f", "concat", "-safe", "0",
-        "-i", list_file,
-        "-c:v", "libx264", "-crf", "23", "-preset", "fast",
-        "-pix_fmt", "yuv420p",
-        args.output
-    ], check=True, capture_output=True)
+        # Main reel
+        render(all_frames, highlights, tmp_reel, fps, ow, oh,
+               slowmo=args.slowmo, freeze_n=args.freeze, hold_n=args.freeze)
 
-    # Cleanup temp files
-    for f in [intro_tmp, tmp_reel, tmp_summary, list_file]:
-        try:
-            os.remove(f)
-        except Exception:
-            pass
+        # Summary card
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        writer = cv2.VideoWriter(tmp_summary, fourcc, fps, (OUT_W, OUT_H))
+        for f in make_summary_card(session, int(fps * 4)):
+            writer.write(f)
+        writer.release()
+
+        # Concat all parts with ffmpeg
+        with open(list_file, "w") as f:
+            f.write(f"file '{tmp_intro}'\n")
+            f.write(f"file '{tmp_reel}'\n")
+            f.write(f"file '{tmp_summary}'\n")
+
+        subprocess.run([
+            "ffmpeg", "-y", "-f", "concat", "-safe", "0",
+            "-i", list_file,
+            "-c:v", "libx264", "-crf", "23", "-preset", "fast",
+            "-pix_fmt", "yuv420p",
+            args.output
+        ], check=True, capture_output=True)
+    finally:
+        # Always clean up temp files
+        import shutil
+        shutil.rmtree(tmp_dir, ignore_errors=True)
 
     size_mb = os.path.getsize(args.output) / 1e6
     dur     = (len(intro_frames) + len(all_frames) + int(fps * 4)) / fps
