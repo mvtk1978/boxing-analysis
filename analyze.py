@@ -23,11 +23,7 @@ from pathlib import Path
 
 from boxing_analyzer.pattern_detector import PatternDetector
 from boxing_analyzer.visualizer import BoxingVisualizer
-from boxing_analyzer.video_io import download_youtube
-
-
-def is_youtube_url(s: str) -> bool:
-    return s.startswith("http") and ("youtube.com" in s or "youtu.be" in s)
+from boxing_analyzer.video_io import download_youtube, is_youtube_url
 
 
 def build_argparser():
@@ -44,8 +40,17 @@ def build_argparser():
     p.add_argument("--no-save", action="store_true",
                    help="Don't save output video")
     p.add_argument("--scale", type=float, default=1.0,
-                   help="Scale video for faster processing (0.5 = half size)")
+                   help="Scale video for faster processing (0.5 = half size, range 0.1-2.0)")
     return p
+
+
+def _validate_args(args):
+    if not (0.1 <= args.scale <= 2.0):
+        raise ValueError(f"--scale must be between 0.1 and 2.0, got {args.scale}")
+    if args.start < 0:
+        raise ValueError(f"--start must be >= 0, got {args.start}")
+    if args.duration is not None and args.duration <= 0:
+        raise ValueError(f"--duration must be > 0, got {args.duration}")
 
 
 def _setup_pose(model_path: str):
@@ -264,6 +269,7 @@ def run_analysis(video_path: str, args):
 def main():
     parser = build_argparser()
     args = parser.parse_args()
+    _validate_args(args)
 
     source = args.source
     video_path = source
