@@ -1,0 +1,88 @@
+{
+  "source": "https://youtu.be/3RaX1sB3aJ8 — Conceição vs Guardado, Top Rank/ESPN broadcast, April 13, 2024",
+  "extraction_method": "yt-dlp auto-generated subtitles, manually curated for tactical relevance",
+  "highlights": [
+    {
+      "timestamp": "4:47",
+      "quote": "Those big right hands are swelling up that left eye on Guardado",
+      "tactical_takeaway": "STRAIGHT RIGHT to the face is already working — Guardado's left eye swelled in the first few rounds. This is a direct entry point.",
+      "category": "punch_selection"
+    },
+    {
+      "timestamp": "5:07",
+      "quote": "That was a nasty body shot right there",
+      "tactical_takeaway": "Body shots land clean throughout the fight. Confirmed kill-shot category.",
+      "category": "body_work"
+    },
+    {
+      "timestamp": "5:09",
+      "quote": "I mean, you know, some guys just like blocking punches with they face",
+      "tactical_takeaway": "Commentator's verdict: Guardado has NO head movement. He absorbs shots on the face/chin instead of slipping or rolling. Massive opening for power shots.",
+      "category": "head_movement"
+    },
+    {
+      "timestamp": "5:13",
+      "quote": "Can't get out of the way",
+      "tactical_takeaway": "Confirms poor defensive footwork — once Otar starts a combination, Guardado has no exit.",
+      "category": "footwork"
+    },
+    {
+      "timestamp": "5:38",
+      "quote": "On the inside... because he's not going to out box",
+      "tactical_takeaway": "Guardado loses on the inside. Get into clinch range, throw short hooks and uppercuts.",
+      "category": "range_management"
+    },
+    {
+      "timestamp": "6:18",
+      "quote": "You see Guardado stepping in behind the jab right there, leaving himself exposed for that uppercut, leaning just a little bit forward",
+      "tactical_takeaway": "GOLD: When Guardado throws his jab, he leans forward — exposing his chin to the UPPERCUT. Time the uppercut to his jab attempts.",
+      "category": "exploitable_pattern"
+    },
+    {
+      "timestamp": "6:29",
+      "quote": "I want to stay low because he does best when he's not standing straight up. And I want to double up on that left hook",
+      "tactical_takeaway": "Coach Bernardo's actual game plan that worked: STAY LOW (Guardado is worse against shorter / lower opponents). DOUBLE UP THE LEFT HOOK. Otar (5'5\") has a natural height advantage here — he IS the low guy.",
+      "category": "game_plan"
+    },
+    {
+      "timestamp": "6:48",
+      "quote": "Looping right hand slapping. There it is again. Right hand kicks him off his foot",
+      "tactical_takeaway": "Wide looping right hand knocks Guardado off balance. He can't anchor against power shots.",
+      "category": "balance"
+    },
+    {
+      "timestamp": "6:56",
+      "quote": "Backs him up against the ropes and then he comes with the wide right hand",
+      "tactical_takeaway": "BLUEPRINT: push him to the ropes → wide right hand. He has no escape footwork.",
+      "category": "ring_generalship"
+    },
+    {
+      "timestamp": "7:42",
+      "quote": "He punches with a lot of force. You see him loading up, but look how the punch lands. Slapping",
+      "tactical_takeaway": "Guardado's own punches don't connect cleanly — his big shots 'slap' rather than penetrate. Don't fear his power. He has no real KO threat.",
+      "category": "opponent_threat_level"
+    },
+    {
+      "timestamp": "8:05",
+      "quote": "The knockdown with a brutal body shot right there",
+      "tactical_takeaway": "The body shot that ended the fight. Same target as the entire round 4-7 buildup.",
+      "category": "finishing_shot"
+    },
+    {
+      "timestamp": "8:42",
+      "quote": "That's called a high guard trap right there. Once you hit that liver and you seize that liver, you cause that type of pain from that liver shot... that pressure will do enough to make him want to say 'Hey, that's enough'",
+      "tactical_takeaway": "THE KO BLUEPRINT: High guard trap (force his hands up high to defend the head), then dig the LEFT HOOK to the LIVER. Liver pain folds him — exactly how the fight ended. Otar should drill this combo.",
+      "category": "kill_shot_setup"
+    }
+  ],
+  "summary_for_camp": [
+    "Guardado leans forward when jabbing — UPPERCUT moments",
+    "Stay LOW — he's worse against shorter opponents (Otar's natural advantage at 5'5\")",
+    "DOUBLE UP THE LEFT HOOK — coach Bernardo confirmed it works",
+    "Push him to the ROPES, then wide right hand",
+    "KO blueprint: HIGH GUARD TRAP → LIVER SHOT (left hook to body)",
+    "His punches SLAP — no real KO power, don't fear exchanges",
+    "Zero head movement — 'blocks punches with his face'",
+    "Left eye swells early from straight rights"
+  ]
+}

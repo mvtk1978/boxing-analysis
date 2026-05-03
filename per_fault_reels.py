@@ -94,6 +94,8 @@ class FrameMeta:
 _FILTER_STATS = {
     "ref_skipped": 0,
     "conceicao_skipped": 0,
+    "broken_pose_skipped": 0,
+    "unconfirmed_skipped": 0,
     "no_pose_total": 0,
     "kept_guardado": 0,
 }
@@ -165,6 +167,63 @@ def green_score(frame_bgr, lms, w, h) -> float:
     return score / max(1, samples)
 
 
+def is_sane_pose(lms) -> bool:
+    """
+    Reject obviously broken pose detections (limb landmarks clearly wrong).
+    Common failure: a knee/ankle landmark grabs the floor/ropes/audience and
+    creates an absurdly long 'leg'. Geometry check: leg length should be
+    roughly comparable to torso length (0.5x to 3x).
+    """
+    try:
+        ls = lms[LM.LEFT_SHOULDER]; rs = lms[LM.RIGHT_SHOULDER]
+        lh = lms[LM.LEFT_HIP];      rh = lms[LM.RIGHT_HIP]
+        la = lms[LM.LEFT_ANKLE];    ra = lms[LM.RIGHT_ANKLE]
+    except Exception:
+        return False
+    sh_y = (ls.y + rs.y) / 2
+    hp_y = (lh.y + rh.y) / 2
+    an_y = (la.y + ra.y) / 2
+    torso = abs(hp_y - sh_y)
+    leg   = abs(an_y - hp_y)
+    if torso < 0.02 or leg < 0.02:
+        return False
+    ratio = leg / torso
+    if not (0.5 <= ratio <= 3.0):
+        return False
+    # Also: shoulder-to-hip geometry sanity. If hips appear ABOVE shoulders, broken.
+    if hp_y < sh_y:
+        return False
+    # Left/right foot asymmetry too extreme = one leg latched onto wrong object
+    foot_y_diff = abs(la.y - ra.y)
+    if foot_y_diff > 0.4:  # more than 40% of frame height apart
+        return False
+    return True
+
+
+def black_shorts_score(frame_bgr, lms, w, h) -> float:
+    """
+    Score how 'black-shorted' a pose is. Higher = more likely Guardado.
+    Samples 3 thigh points; counts dark non-green pixels.
+    Returns 0-100. Score >= 50 = confirmed Guardado.
+    """
+    dark_non_green = 0
+    samples = 0
+    for r in (0.70, 0.78, 0.85):
+        hsv = _sample_hsv(frame_bgr, lms, w, h, r)
+        if hsv is None:
+            continue
+        h_, s_, v_ = hsv
+        samples += 1
+        # Reject if green hue with any saturation
+        is_green = (40 <= h_ <= 85) and s_ > 40
+        is_dark  = v_ < 90  # liberal dark threshold (motion blur, shadow)
+        if is_dark and not is_green:
+            dark_non_green += 1
+    if samples == 0:
+        return 0.0
+    return (dark_non_green / samples) * 100.0
+
+
 def bbox_area(lms) -> float:
     xs = [lms[i].x for i in range(33)]
     ys = [lms[i].y for i in range(33)]
@@ -185,13 +244,15 @@ def build_landmarker(model_path):
 
 def detect(landmarker, frame_bgr, ts_ms):
     """
-    Detect up to N poses, identify GUARDADO specifically:
+    STRICT Guardado-only identification:
       1. Skip referee (blue shirt at chest)
-      2. From remaining poses, score each by 'green-shortedness'
-      3. If 2+ candidates: pick the LEAST-green one (Guardado, since
-         Conceição has bright green trunks — works regardless of lighting)
-      4. If only 1 candidate AND it's strongly green: skip (it's Conceição
-         alone in frame); else accept (likely Guardado)
+      2. For each remaining pose, compute black_shorts_score AND green_score
+      3. Only keep poses with black_shorts_score >= 67 AND green_score < 10
+         (confirmed black shorts, no green leakage)
+      4. Among confirmed Guardados (rare to have multiple), pick largest bbox
+      5. NO FALLBACK — if no confirmed Guardado, skip the frame entirely.
+         Better to lose questionable frames than to mis-attribute Conceição's
+         flaws to Guardado.
     """
     rgb    = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
     mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
@@ -201,37 +262,32 @@ def detect(landmarker, frame_bgr, ts_ms):
         return None
 
     h, w = frame_bgr.shape[:2]
-    candidates = []  # (green_score, bbox_area, pose)
+    confirmed = []  # (bbox_area, pose)
 
     for pose in r.pose_landmarks:
+        # Geometric sanity check first (cheap)
+        if not is_sane_pose(pose):
+            _FILTER_STATS["broken_pose_skipped"] += 1
+            continue
         if is_blue_shirt(frame_bgr, pose, w, h):
             _FILTER_STATS["ref_skipped"] += 1
             continue
+        bs = black_shorts_score(frame_bgr, pose, w, h)
         gs = green_score(frame_bgr, pose, w, h)
-        candidates.append((gs, bbox_area(pose), pose))
+        if gs >= 10.0:
+            _FILTER_STATS["conceicao_skipped"] += 1
+            continue
+        if bs < 67.0:
+            _FILTER_STATS["unconfirmed_skipped"] += 1
+            continue
+        confirmed.append((bbox_area(pose), pose))
 
-    if not candidates:
-        _FILTER_STATS["no_pose_total"] += 1
+    if not confirmed:
         return None
 
-    # Sort by green-score (lowest first = most likely Guardado)
-    candidates.sort(key=lambda x: x[0])
-
-    if len(candidates) >= 2:
-        # Multiple non-ref poses — pick least-green = Guardado
-        # Highest-green one is Conceição (skipped by selection)
-        _FILTER_STATS["conceicao_skipped"] += 1
-        chosen = candidates[0][2]
-    else:
-        # Only one non-ref pose. If it's strongly green, it's Conceição alone
-        # (possible during knockdown / between-rounds). Skip in that case.
-        if candidates[0][0] > 30.0:  # strong green signal
-            _FILTER_STATS["conceicao_skipped"] += 1
-            return None
-        chosen = candidates[0][2]
-
+    confirmed.sort(key=lambda x: -x[0])
     _FILTER_STATS["kept_guardado"] += 1
-    return chosen
+    return confirmed[0][1]
 
 
 # ─── Drawing ─────────────────────────────────────────────────────────────────
@@ -536,7 +592,7 @@ def main():
             rate = done / max(0.1, time.time() - t0)
             eta  = (end_f - fi) / max(0.1, rate)
             print(f"  frame {fi}/{end_f} ({pct:.0f}%) | {rate:.1f} fps | ETA {eta:.0f}s "
-                  f"| ref={_FILTER_STATS['ref_skipped']} concei={_FILTER_STATS['conceicao_skipped']} guard={_FILTER_STATS['kept_guardado']}",
+                  f"| ref={_FILTER_STATS['ref_skipped']} concei={_FILTER_STATS['conceicao_skipped']} broken={_FILTER_STATS['broken_pose_skipped']} unconf={_FILTER_STATS['unconfirmed_skipped']} guard={_FILTER_STATS['kept_guardado']}",
                   flush=True)
             last_status = time.time()
     cap.release()
