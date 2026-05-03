@@ -91,29 +91,78 @@ class FrameMeta:
 
 # ─── Ref filter & multi-pose detection ───────────────────────────────────────
 
-_FILTER_STATS = {"ref_skipped": 0, "no_pose_total": 0, "kept": 0}
+_FILTER_STATS = {
+    "ref_skipped": 0,
+    "conceicao_skipped": 0,
+    "no_pose_total": 0,
+    "kept_guardado": 0,
+}
 
 
-def is_blue_shirt(frame_bgr, lms, w, h) -> bool:
+def _sample_hsv(frame_bgr, lms, w, h, ratio_along_torso: float):
+    """
+    Sample HSV at a point between shoulders and ankles.
+    ratio_along_torso = 0.0 (shoulders) → 1.0 (ankles).
+    Returns (h, s, v) or None.
+    """
     try:
         ls = get_point(lms, LM.LEFT_SHOULDER,  w, h)
         rs = get_point(lms, LM.RIGHT_SHOULDER, w, h)
         lh = get_point(lms, LM.LEFT_HIP,       w, h)
         rh = get_point(lms, LM.RIGHT_HIP,      w, h)
+        lk = get_point(lms, LM.LEFT_KNEE,      w, h)
+        rk = get_point(lms, LM.RIGHT_KNEE,     w, h)
     except Exception:
-        return False
+        return None
     sh_mid = (ls + rs) / 2
     hp_mid = (lh + rh) / 2
-    chest  = (sh_mid * 0.6 + hp_mid * 0.4).astype(int)
-    cx, cy = int(chest[0]), int(chest[1])
+    kn_mid = (lk + rk) / 2
+    if ratio_along_torso <= 0.6:
+        # shoulders → hips
+        t = ratio_along_torso / 0.6
+        pt = sh_mid * (1 - t) + hp_mid * t
+    else:
+        # hips → knees (shorts area)
+        t = (ratio_along_torso - 0.6) / 0.4
+        pt = hp_mid * (1 - t) + kn_mid * t
+    cx, cy = int(pt[0]), int(pt[1])
     cx = max(3, min(w - 4, cx)); cy = max(3, min(h - 4, cy))
     patch = frame_bgr[cy-3:cy+4, cx-3:cx+4]
     if patch.size == 0:
-        return False
+        return None
     avg = patch.reshape(-1, 3).mean(axis=0).astype(np.uint8)
     hsv = cv2.cvtColor(np.uint8([[avg]]), cv2.COLOR_BGR2HSV)[0][0]
-    h_, s_, v_ = int(hsv[0]), int(hsv[1]), int(hsv[2])
+    return int(hsv[0]), int(hsv[1]), int(hsv[2])
+
+
+def is_blue_shirt(frame_bgr, lms, w, h) -> bool:
+    """Referee in blue/light-blue shirt — sample chest area."""
+    hsv = _sample_hsv(frame_bgr, lms, w, h, 0.35)  # upper torso
+    if hsv is None:
+        return False
+    h_, s_, v_ = hsv
     return (95 <= h_ <= 140) and s_ > 70 and v_ > 35
+
+
+def green_score(frame_bgr, lms, w, h) -> float:
+    """
+    Score how 'green-shorted' a pose is. Higher = more likely Conceição.
+    Samples 3 points along the thigh region for robustness.
+    """
+    score = 0.0
+    samples = 0
+    for r in (0.70, 0.78, 0.85):
+        hsv = _sample_hsv(frame_bgr, lms, w, h, r)
+        if hsv is None:
+            continue
+        h_, s_, v_ = hsv
+        samples += 1
+        # Green hue 40-85 (broad). Score scales with saturation + presence
+        # in the green hue band. Even shadowy green still has hue in band.
+        if 40 <= h_ <= 85:
+            # weight: saturation matters more than brightness for hue ID
+            score += (s_ / 255.0) * 100 * (1 + (v_ / 255.0))
+    return score / max(1, samples)
 
 
 def bbox_area(lms) -> float:
@@ -135,25 +184,54 @@ def build_landmarker(model_path):
 
 
 def detect(landmarker, frame_bgr, ts_ms):
+    """
+    Detect up to N poses, identify GUARDADO specifically:
+      1. Skip referee (blue shirt at chest)
+      2. From remaining poses, score each by 'green-shortedness'
+      3. If 2+ candidates: pick the LEAST-green one (Guardado, since
+         Conceição has bright green trunks — works regardless of lighting)
+      4. If only 1 candidate AND it's strongly green: skip (it's Conceição
+         alone in frame); else accept (likely Guardado)
+    """
     rgb    = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
     mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
     r      = landmarker.detect_for_video(mp_img, ts_ms)
     if not r.pose_landmarks:
         _FILTER_STATS["no_pose_total"] += 1
         return None
+
     h, w = frame_bgr.shape[:2]
-    keep = []
+    candidates = []  # (green_score, bbox_area, pose)
+
     for pose in r.pose_landmarks:
         if is_blue_shirt(frame_bgr, pose, w, h):
             _FILTER_STATS["ref_skipped"] += 1
             continue
-        keep.append((bbox_area(pose), pose))
-    if not keep:
+        gs = green_score(frame_bgr, pose, w, h)
+        candidates.append((gs, bbox_area(pose), pose))
+
+    if not candidates:
         _FILTER_STATS["no_pose_total"] += 1
         return None
-    keep.sort(key=lambda x: -x[0])
-    _FILTER_STATS["kept"] += 1
-    return keep[0][1]
+
+    # Sort by green-score (lowest first = most likely Guardado)
+    candidates.sort(key=lambda x: x[0])
+
+    if len(candidates) >= 2:
+        # Multiple non-ref poses — pick least-green = Guardado
+        # Highest-green one is Conceição (skipped by selection)
+        _FILTER_STATS["conceicao_skipped"] += 1
+        chosen = candidates[0][2]
+    else:
+        # Only one non-ref pose. If it's strongly green, it's Conceição alone
+        # (possible during knockdown / between-rounds). Skip in that case.
+        if candidates[0][0] > 30.0:  # strong green signal
+            _FILTER_STATS["conceicao_skipped"] += 1
+            return None
+        chosen = candidates[0][2]
+
+    _FILTER_STATS["kept_guardado"] += 1
+    return chosen
 
 
 # ─── Drawing ─────────────────────────────────────────────────────────────────
@@ -458,7 +536,7 @@ def main():
             rate = done / max(0.1, time.time() - t0)
             eta  = (end_f - fi) / max(0.1, rate)
             print(f"  frame {fi}/{end_f} ({pct:.0f}%) | {rate:.1f} fps | ETA {eta:.0f}s "
-                  f"| ref_skipped={_FILTER_STATS['ref_skipped']} kept={_FILTER_STATS['kept']}",
+                  f"| ref={_FILTER_STATS['ref_skipped']} concei={_FILTER_STATS['conceicao_skipped']} guard={_FILTER_STATS['kept_guardado']}",
                   flush=True)
             last_status = time.time()
     cap.release()
@@ -467,7 +545,9 @@ def main():
     print(f"[Pass 1] done in {time.time()-t0:.0f}s — {len(metas)} frames analyzed",
           flush=True)
     print(f"[Filter] ref_skipped={_FILTER_STATS['ref_skipped']}  "
-          f"kept={_FILTER_STATS['kept']}  no_pose={_FILTER_STATS['no_pose_total']}",
+          f"conceicao_skipped={_FILTER_STATS['conceicao_skipped']}  "
+          f"guardado_kept={_FILTER_STATS['kept_guardado']}  "
+          f"no_pose={_FILTER_STATS['no_pose_total']}",
           flush=True)
 
     summary = pat.get_session_summary()
