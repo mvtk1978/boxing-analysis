@@ -1,19 +1,20 @@
 {
   "method": "YOLOv8 + ByteTrack/BoT-SORT + MediaPipe pose on bbox crop",
   "frames_analyzed": 10475,
-  "guardado_pose_frames": 7268,
-  "track_lost": 317,
-  "track_recovered": 296,
+  "guardado_pose_frames": 2974,
+  "track_lost": 500,
+  "track_recovered": 281,
+  "color_rejected": 3412,
   "fault_percentages": {
-    "Chin Up - Head Exposed": 97.8,
-    "Rear Hand Too Low": 93.3,
-    "Lead Elbow Flared": 82.2,
-    "Lead Hand Too Low": 80.0,
-    "Rear Elbow Flared": 71.1,
-    "Stance Too Narrow": 53.3,
-    "Stance Too Wide": 22.2,
-    "Feet Crossing - Dangerous Footwork": 4.4,
-    "Trunk Leaning Forward": 2.2
+    "Chin Up - Head Exposed": 91.1,
+    "Lead Hand Too Low": 84.4,
+    "Rear Hand Too Low": 82.2,
+    "Stance Too Narrow": 66.7,
+    "Rear Elbow Flared": 55.6,
+    "Lead Elbow Flared": 48.9,
+    "Trunk Leaning Backward": 37.8,
+    "Stance Too Wide": 20.0,
+    "Feet Crossing - Dangerous Footwork": 13.3
   },
   "seed_box": [
     208,

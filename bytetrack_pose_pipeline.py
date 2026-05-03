@@ -67,6 +67,17 @@ def iou_xyxy(a, b):
     return inter / union if union > 0 else 0.0
 
 
+def is_guardado_color(frame_bgr, box_xyxy, w, h) -> bool:
+    """
+    Hard color gate: even if the tracker says it's Guardado, verify the
+    bbox is on a DARK-trunked boxer with NO green leakage.
+    Returns True only if confident this is Guardado.
+    """
+    green, dark = shorts_color_score(frame_bgr, box_xyxy, w, h)
+    # Must be substantially dark AND no significant green pixels
+    return dark > 25.0 and green < 8.0
+
+
 def shorts_color_score(frame_bgr, box_xyxy, w, h):
     """
     Sample the lower-third of the bbox (shorts area).
@@ -127,25 +138,25 @@ def find_guardado_track_id(seed_results, frame_bgr, seed_box: Tuple[int,int,int,
 
 def re_id_guardado(results, frame_bgr, last_box, w, h):
     """
-    Track lost — try to recover by:
-      1. Pick person box closest to last_box (highest IoU)
-      2. Verify shorts area is dark, not green
-    Returns (box, track_id) or (None, None).
+    Track lost — try to recover but ONLY if a candidate confidently
+    passes the Guardado color test. Otherwise return None (skip frame).
     """
     if results.boxes.id is None or len(results.boxes) == 0:
         return None, None
     boxes = results.boxes.xyxy.cpu().numpy()
     ids   = results.boxes.id.cpu().numpy().astype(int)
     cls   = results.boxes.cls.cpu().numpy().astype(int)
-    best = (None, None, -1.0)  # (box, id, score)
+    candidates = []
     for box, tid, c in zip(boxes, ids, cls):
         if c != 0: continue
+        if not is_guardado_color(frame_bgr, box, w, h):
+            continue   # HARD reject any non-Guardado coloring
         iou = iou_xyxy(box, last_box) if last_box is not None else 0.0
-        green, dark = shorts_color_score(frame_bgr, box, w, h)
-        # Score: penalize green, reward proximity + darkness
-        score = iou * 100 - green * 0.5 + dark * 0.3
-        if score > best[2]:
-            best = (box, int(tid), score)
+        candidates.append((box, int(tid), iou))
+    if not candidates:
+        return None, None
+    candidates.sort(key=lambda x: -x[2])
+    best = candidates[0]
     return best[0], best[1]
 
 
@@ -247,6 +258,7 @@ def main():
 
     track_lost_count = 0
     track_recovered_count = 0
+    color_rejected_count = 0
     pose_found_count = 0
 
     while cap.isOpened() and fi < end_f:
@@ -275,15 +287,23 @@ def main():
                 gbox = results.boxes.xyxy.cpu().numpy()[mask][0]
 
         if gbox is None and guardado_tid is not None:
-            # Track lost — try to re-identify
+            # Track lost — try to re-identify (with strict color verification)
             track_lost_count += 1
             recovered_box, recovered_id = re_id_guardado(
                 results, frame, last_box, W, H)
-            if recovered_box is not None and recovered_id != guardado_tid:
-                # Color/proximity test passed — adopt new track ID
-                guardado_tid = recovered_id
-                track_recovered_count += 1
+            if recovered_box is not None:
+                if recovered_id != guardado_tid:
+                    guardado_tid = recovered_id
+                    track_recovered_count += 1
                 gbox = recovered_box
+
+        # ── HARD COLOR GATE ──
+        # Even if the tracker says it's Guardado, verify the bbox is on a
+        # dark-trunked boxer with no green leakage. If it fails, drop the
+        # frame entirely (better no data than wrong-boxer data).
+        if gbox is not None and not is_guardado_color(frame, gbox, W, H):
+            color_rejected_count += 1
+            gbox = None
 
         if gbox is not None:
             last_box = gbox
@@ -301,7 +321,7 @@ def main():
             done = fi - start_f
             rate = done / max(0.1, time.time() - t0)
             eta = (end_f - fi) / max(0.1, rate)
-            print(f"  frame {fi}/{end_f} ({done/(end_f-start_f)*100:.0f}%) | {rate:.1f} fps | ETA {eta:.0f}s | pose_found={pose_found_count} lost={track_lost_count} recovered={track_recovered_count}", flush=True)
+            print(f"  frame {fi}/{end_f} ({done/(end_f-start_f)*100:.0f}%) | {rate:.1f} fps | ETA {eta:.0f}s | pose={pose_found_count} lost={track_lost_count} recovered={track_recovered_count} color_rejected={color_rejected_count}", flush=True)
             last_status = time.time()
 
     cap.release()
@@ -311,6 +331,7 @@ def main():
     print(f"  total frames analyzed: {len(metas)}", flush=True)
     print(f"  Guardado pose detected: {pose_found_count}", flush=True)
     print(f"  track lost events: {track_lost_count} (recovered: {track_recovered_count})", flush=True)
+    print(f"  color-gate rejections (wrong-boxer leakage prevented): {color_rejected_count}", flush=True)
 
     summary = detector.get_session_summary()
     print("\n[Top faults]", flush=True)
@@ -326,6 +347,7 @@ def main():
             "guardado_pose_frames": pose_found_count,
             "track_lost": track_lost_count,
             "track_recovered": track_recovered_count,
+            "color_rejected": color_rejected_count,
             "fault_percentages": summary,
             "seed_box": list(seed_box),
             "seed_frame_time": args.seed_frame_time,
