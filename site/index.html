@@ -331,39 +331,39 @@
     </div>
 </div>
 
-<!-- KEY STATS — Guardado-only -->
+<!-- KEY STATS — Guardado-only via YOLOv8 + ByteTrack -->
 <div class="container">
     <p style="text-align: center; color: var(--muted); font-size: 0.85rem; margin: 16px 0 -12px;">
-        Frame-by-frame AI analysis of Guardado only. Conceição and referee detections excluded via shorts-color and pose filters.
+        YOLOv8 person detection + BoT-SORT tracking on every frame. Guardado track identity confirmed at seed frame, then propagated through 7,268 frames of clean Guardado pose data. 296 of 317 track-loss events successfully recovered via re-identification.
     </p>
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="number red">100%</div>
-            <div class="desc">Lead hand too low</div>
-        </div>
-        <div class="stat-card">
             <div class="number red">97.8%</div>
-            <div class="desc">Rear hand too low</div>
-        </div>
-        <div class="stat-card">
-            <div class="number red">95.6%</div>
-            <div class="desc">Lead elbow flared</div>
-        </div>
-        <div class="stat-card">
-            <div class="number red">86.7%</div>
-            <div class="desc">Rear elbow flared</div>
-        </div>
-        <div class="stat-card">
-            <div class="number orange">40.0%</div>
             <div class="desc">Chin exposed</div>
         </div>
         <div class="stat-card">
-            <div class="number orange">20.0%</div>
-            <div class="desc">Stance too wide</div>
+            <div class="number red">93.3%</div>
+            <div class="desc">Rear hand too low</div>
         </div>
         <div class="stat-card">
-            <div class="number orange">17.8%</div>
+            <div class="number red">82.2%</div>
+            <div class="desc">Lead elbow flared</div>
+        </div>
+        <div class="stat-card">
+            <div class="number red">80.0%</div>
+            <div class="desc">Lead hand too low</div>
+        </div>
+        <div class="stat-card">
+            <div class="number red">71.1%</div>
+            <div class="desc">Rear elbow flared</div>
+        </div>
+        <div class="stat-card">
+            <div class="number orange">53.3%</div>
             <div class="desc">Stance too narrow</div>
+        </div>
+        <div class="stat-card">
+            <div class="number orange">22.2%</div>
+            <div class="desc">Stance too wide</div>
         </div>
         <div class="stat-card">
             <div class="number muted">4.4%</div>
@@ -451,51 +451,51 @@
 
         <div class="fault-list">
 
-            <!-- #1: Lead Hand Too Low — 100% -->
-            <div class="fault-item" id="lead-hand-low">
+            <!-- #1: Chin Up — 97.8% -->
+            <div class="fault-item" id="chin-exposed">
                 <div class="fault-header">
-                    <span class="fault-name">Lead Hand Too Low</span>
-                    <span class="fault-pct" style="color: var(--accent);">100%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 100%;"></div></div>
-                <p class="fault-description">
-                    <strong>Guardado's #1 vulnerability.</strong> His lead hand is below the guard threshold in EVERY clean frame. Direct path to his face for the right hand &mdash; no parry ability whatsoever.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Jab to measure, then come over the top with the straight right or overhand right. The straight right is the entry shot &mdash; commentator noted his left eye was already swollen from these by round 4. The longer the fight goes, the more this opens up &mdash; he doesn't recover his guard between exchanges.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/lead_hand_too_low.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- #2: Rear Hand Too Low — 97.8% -->
-            <div class="fault-item" id="rear-hand-low">
-                <div class="fault-header">
-                    <span class="fault-name">Rear Hand Too Low</span>
+                    <span class="fault-name">Chin Up &mdash; Head Exposed</span>
                     <span class="fault-pct" style="color: var(--accent);">97.8%</span>
                 </div>
                 <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 97.8%;"></div></div>
                 <p class="fault-description">
-                    Rear hand drops in 98% of frames. <strong>Combined with the 100% lead-hand-low, Jose's ENTIRE GUARD is down virtually the whole fight.</strong> He's effectively fighting with both hands at his hips. No protection above the chest line, no parry on either side.
+                    <strong>Guardado's #1 vulnerability.</strong> His chin is elevated in 98% of clean frames. He almost never tucks his chin, leaving the jaw as a permanent target for hooks and uppercuts.
                 </p>
                 <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Volume punching to the head. Lead hook → cross → uppercut combinations. The commentator's verdict was blunt: "blocking punches with his face." He can't cover up because both hands need to travel huge distances back to a guard position. <strong>Combination volume is the path to TKO.</strong>
+                    <strong>How Otar exploits this:</strong> The exposed chin is THE money shot opportunity. Left hook to the chin behind the jab. Uppercuts through the guard land clean every time. Time overhand rights when he's stationary on the line.
+                </div>
+                <div class="fault-reel">
+                    <video controls preload="metadata"><source src="reels/chin_up_head_exposed.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+            <!-- #2: Rear Hand Too Low — 93.3% -->
+            <div class="fault-item" id="rear-hand-low">
+                <div class="fault-header">
+                    <span class="fault-name">Rear Hand Too Low</span>
+                    <span class="fault-pct" style="color: var(--accent);">93.3%</span>
+                </div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 93.3%;"></div></div>
+                <p class="fault-description">
+                    Rear hand drops in 93% of frames. <strong>Combined with the 80% lead-hand-low, Jose's guard is collapsed most of the fight.</strong> No protection above the chest line, no parry on either side.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> Volume punching to the head. Lead hook → cross → uppercut combinations. Commentator: "blocking punches with his face." He can't cover up because both hands need to travel huge distances back to a guard position. <strong>Combination volume is the path to TKO.</strong>
                 </div>
                 <div class="fault-reel">
                     <video controls preload="metadata"><source src="reels/rear_hand_too_low.mp4" type="video/mp4"></video>
                 </div>
             </div>
 
-            <!-- #3: Lead Elbow Flared — 95.6% -->
+            <!-- #3: Lead Elbow Flared — 82.2% -->
             <div class="fault-item" id="lead-elbow">
                 <div class="fault-header">
                     <span class="fault-name">Lead Elbow Flared</span>
-                    <span class="fault-pct" style="color: var(--accent);">95.6%</span>
+                    <span class="fault-pct" style="color: var(--accent);">82.2%</span>
                 </div>
-                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 95.6%;"></div></div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 82.2%;"></div></div>
                 <p class="fault-description">
-                    Lead elbow flared in 96% of frames &mdash; almost constantly. His left side body is wide open: ribs, liver area on his lead side, and the corridor for the right hand to come straight down the middle.
+                    Lead elbow flared in 82% of frames. His left side body is wide open: ribs, liver area on his lead side, and the corridor for the right hand to come straight down the middle.
                 </p>
                 <div class="fault-exploit">
                     <strong>How Otar exploits this:</strong> Right hooks to the body under the lead elbow create the body damage that breaks him. Straight right over the top of the flared elbow is a free shot. When Guardado tries to throw his own jab, his elbow flares even more &mdash; that's the moment to step right and counter.
@@ -505,15 +505,33 @@
                 </div>
             </div>
 
-            <!-- #4: Rear Elbow Flared — 86.7% -->
+            <!-- #4: Lead Hand Too Low — 80% -->
+            <div class="fault-item" id="lead-hand-low">
+                <div class="fault-header">
+                    <span class="fault-name">Lead Hand Too Low</span>
+                    <span class="fault-pct" style="color: var(--accent);">80.0%</span>
+                </div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 80%;"></div></div>
+                <p class="fault-description">
+                    Lead hand drops below the guard threshold in 80% of clean frames. Direct path to his face for the right hand, almost no parry ability. The straight right and lead hook to the chin both have nearly uncontested lanes.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> Jab to measure, then come over the top with the straight right or overhand right. Commentator noted his left eye was swollen from these by round 4. He doesn't recover his guard between exchanges &mdash; the longer the fight, the wider the openings.
+                </div>
+                <div class="fault-reel">
+                    <video controls preload="metadata"><source src="reels/lead_hand_too_low.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+            <!-- #5: Rear Elbow Flared — 71.1% -->
             <div class="fault-item" id="rear-elbow">
                 <div class="fault-header">
                     <span class="fault-name">Rear Elbow Flared</span>
-                    <span class="fault-pct" style="color: var(--accent);">86.7%</span>
+                    <span class="fault-pct" style="color: var(--accent);">71.1%</span>
                 </div>
-                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 86.7%;"></div></div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 71.1%;"></div></div>
                 <p class="fault-description">
-                    Rear elbow flared in 87% of frames. Opens the liver and right-ribs corridor &mdash; <strong>precisely where Conceição's body shot landed for the round 7 KO.</strong>
+                    Rear elbow flared in 71% of frames. Opens the liver and right-ribs corridor &mdash; <strong>precisely where Conceição's body shot landed for the round 7 KO.</strong>
                 </p>
                 <div class="fault-exploit">
                     <strong>How Otar exploits this — THE KO BLUEPRINT:</strong> The "high guard trap" the commentator described &mdash; force his hands up high to defend the head with high feints, then dig the LEFT HOOK to the LIVER through this gap. Liver pain folds him. This is exactly how the fight ended. <strong>Drill this combo daily.</strong>
@@ -523,51 +541,15 @@
                 </div>
             </div>
 
-            <!-- #5: Chin Up — 40% -->
-            <div class="fault-item" id="chin-exposed">
-                <div class="fault-header">
-                    <span class="fault-name">Chin Up &mdash; Head Exposed</span>
-                    <span class="fault-pct" style="color: var(--accent2);">40.0%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 40%;"></div></div>
-                <p class="fault-description">
-                    Chin up in 40% of frames. He does some chin-tucking, but combined with the collapsed guard above (both hands down 97-100% of the time), the moments he doesn't tuck are wide open for hooks and uppercuts.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Time the moments his chin floats up &mdash; usually when he's resetting or after he throws. Uppercuts up the middle through his weak guard land clean. Hooks to the chin off the jab work because he can't intercept with his low lead hand.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/chin_up_head_exposed.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- #6: Stance Too Wide — 20% -->
-            <div class="fault-item" id="wide-stance">
-                <div class="fault-header">
-                    <span class="fault-name">Stance Too Wide</span>
-                    <span class="fault-pct" style="color: var(--accent2);">20.0%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 20%;"></div></div>
-                <p class="fault-description">
-                    Over-extended stance in 20% of frames. Mostly when he's lunging with punches or trying to close distance. Plants his feet, can't pivot.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> When he over-commits forward with his stance, pivot off the line and counter. The commentator noted "wide right hand kicks him off his foot" &mdash; he can't anchor when over-extended.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/stance_too_wide.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- #7: Stance Too Narrow — 17.8% -->
+            <!-- #6: Stance Too Narrow — 53.3% -->
             <div class="fault-item" id="narrow-stance">
                 <div class="fault-header">
                     <span class="fault-name">Stance Too Narrow</span>
-                    <span class="fault-pct" style="color: var(--accent2);">17.8%</span>
+                    <span class="fault-pct" style="color: var(--accent2);">53.3%</span>
                 </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 17.8%;"></div></div>
+                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 53.3%;"></div></div>
                 <p class="fault-description">
-                    Feet too close together in 18% of frames. Creates moments of weak balance &mdash; especially when he's being pressed or trying to pivot away.
+                    Feet too close together in 53% of frames. Narrow base = no balance under pressure, weak power transfer, can't absorb body shots.
                 </p>
                 <div class="fault-exploit">
                     <strong>How Otar exploits this:</strong> Push to the ropes during his narrow-stance moments &mdash; he can't escape. Body shots fold him because he can't brace. <strong>Coach Bernardo's tactic that worked: stay LOW, double up the left hook.</strong> At 5'5", Otar is naturally lower than Guardado at 5'9".
@@ -577,25 +559,25 @@
                 </div>
             </div>
 
-            <!-- #8: Trunk Leaning Backward — 17.8% -->
-            <div class="fault-item" id="trunk-back">
+            <!-- #7: Stance Too Wide — 22.2% -->
+            <div class="fault-item" id="wide-stance">
                 <div class="fault-header">
-                    <span class="fault-name">Trunk Leaning Backward</span>
-                    <span class="fault-pct" style="color: var(--accent2);">17.8%</span>
+                    <span class="fault-name">Stance Too Wide</span>
+                    <span class="fault-pct" style="color: var(--accent2);">22.2%</span>
                 </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 17.8%;"></div></div>
+                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 22.2%;"></div></div>
                 <p class="fault-description">
-                    Pulls back to evade in 18% of frames. When it happens, his power is gone and he's vulnerable to step-in counters &mdash; he can't generate offense from a backward-leaning posture.
+                    Over-extended stance in 22% of frames &mdash; mostly when he lunges with punches or tries to close distance. Plants his feet, slow to pivot.
                 </p>
                 <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> When Guardado leans back to evade, step in with the jab to close the gap, then unload combinations. He can't counter effectively while moving backward. <strong>Important pattern:</strong> commentator noted Guardado leans FORWARD when stepping in with his jab &mdash; uppercut moments. The pattern is: sometimes leans back, sometimes leans forward, but rarely upright + balanced.
+                    <strong>How Otar exploits this:</strong> When he over-commits forward, pivot off the line and counter. Commentator noted "wide right hand kicks him off his foot" &mdash; he can't anchor when over-extended.
                 </div>
                 <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/trunk_leaning_backward.mp4" type="video/mp4"></video>
+                    <video controls preload="metadata"><source src="reels/stance_too_wide.mp4" type="video/mp4"></video>
                 </div>
             </div>
 
-            <!-- #9: Feet Crossing — 4.4% -->
+            <!-- #8: Feet Crossing — 4.4% -->
             <div class="fault-item" id="feet-crossing">
                 <div class="fault-header">
                     <span class="fault-name">Feet Crossing <span class="badge badge-critical" style="font-size: 0.65rem;">CRITICAL</span></span>
@@ -610,6 +592,24 @@
                 </div>
                 <div class="fault-reel">
                     <video controls preload="metadata"><source src="reels/feet_crossing_dangerous_footwork.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+            <!-- #9: Trunk Leaning Forward — 2.2% -->
+            <div class="fault-item" id="trunk-fwd">
+                <div class="fault-header">
+                    <span class="fault-name">Trunk Leaning Forward</span>
+                    <span class="fault-pct" style="color: var(--muted);">2.2%</span>
+                </div>
+                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 2.2%;"></div></div>
+                <p class="fault-description">
+                    Over-commits weight forward in 2% of frames. Rare but exploitable when it happens &mdash; uppercut path opens up the middle.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> Commentator noted Guardado leans forward when stepping in behind his jab &mdash; uppercut moments. Time the uppercut to his jab attempts.
+                </div>
+                <div class="fault-reel">
+                    <video controls preload="metadata"><source src="reels/trunk_leaning_forward.mp4" type="video/mp4"></video>
                 </div>
             </div>
 
@@ -880,14 +880,16 @@
 <div class="container">
     <div class="section">
         <h2 class="section-title">How this report was made</h2>
-        <div class="gameplan-card" style="max-width: 700px;">
+        <div class="gameplan-card" style="max-width: 720px;">
             <ul>
-                <li>MediaPipe PoseLandmarker (33-point body skeleton per frame, 25 FPS)</li>
-                <li>10,475 frames analyzed across the actual fight (1:38&ndash;8:37)</li>
-                <li>Guardado isolated by black-shorts color filter (Conceição's green trunks excluded)</li>
-                <li>1,841 confirmed Guardado poses analyzed; rest discarded as referee, Conceição, or unconfirmable</li>
-                <li>9 fault detectors with critical / warning severity thresholds</li>
-                <li>Commentator quotes pulled from YouTube auto-captions, manually curated</li>
+                <li><strong>Detection + Tracking:</strong> YOLOv8x for person detection + BoT-SORT for persistent track IDs across frames</li>
+                <li><strong>Identity:</strong> Guardado track ID confirmed at seed frame (t=130s, manual bbox); 296 of 317 track-loss events recovered via IoU + shorts-color re-identification</li>
+                <li><strong>Pose:</strong> MediaPipe PoseLandmarker (33-point skeleton) run only on Guardado's bbox crop &mdash; eliminates wrong-boxer detections and broken-leg artifacts</li>
+                <li><strong>Window:</strong> 10,475 frames across the actual fight (1:38 bell to 8:37 end), 7,268 with confirmed Guardado pose</li>
+                <li><strong>Faults:</strong> 9 detectors with critical / warning severity thresholds, all metrics normalized by body height for scale invariance</li>
+                <li><strong>Per-fault reels:</strong> top 4 highest-confidence moments per flaw, freeze + slow-motion + persistent subtitle</li>
+                <li><strong>Commentary:</strong> YouTube auto-captions parsed via yt-dlp, manually curated for tactical relevance</li>
+                <li><strong>Compute:</strong> RTX 4080 GPU, ~6 min total runtime per video</li>
                 <li>Tool: <a href="https://github.com/mvtk1978/boxing-analysis" target="_blank" style="color: var(--accent);">github.com/mvtk1978/boxing-analysis</a> (open source)</li>
             </ul>
         </div>
