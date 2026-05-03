@@ -377,7 +377,8 @@
                 </video>
             </div>
             <p style="margin-top: 12px; font-size: 0.85rem; color: var(--muted); text-align: center;">
-                11 min reel | 17 fault moments | freeze + slow-mo + on-screen callouts
+                11 min reel | 17 fault moments | freeze + slow-mo + on-screen callouts<br>
+                <span style="color: var(--accent2);">⚠ Last 1&ndash;2 highlights may show the referee, not Jose &mdash; see "Analysis Caveat" below</span>
             </p>
         </div>
     </div>
@@ -582,10 +583,52 @@
                 <span class="ts-time">7:30</span>
                 <span class="ts-desc"><strong>R7 - The Finish:</strong> Brutal body shot drops Guardado. Same patterns exploited all fight lead to the stoppage.</span>
             </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=500" target="_blank">
-                <span class="ts-time">8:20</span>
-                <span class="ts-desc"><strong>Post-fight:</strong> Guardado stays down from body shot. His narrow stance and flared elbows made this inevitable.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=500" target="_blank" style="border-color: var(--accent2);">
+                <span class="ts-time" style="background: var(--accent2); color: #000;">8:20</span>
+                <span class="ts-desc"><strong style="color: var(--accent2);">REFEREE IN FRAME (manual review):</strong> Fight is stopped. The single-pose AI tracker locks onto the referee in the blue shirt and reports his stance/posture as "Jose's flaws" &mdash; ignore late-round detections after the stoppage.</span>
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- ANALYSIS CAVEAT -->
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Analysis Caveat: Referee Misidentification <span class="badge badge-warning">MANUAL REVIEW FINDING</span></h2>
+        <p class="section-subtitle">Honest disclosure of a single-pose tracking limitation discovered during review</p>
+
+        <div class="gameplan-card" style="border-color: var(--accent2);">
+            <h3 style="color: var(--accent2);">What we found</h3>
+            <p style="font-size: 0.92rem; color: var(--text); margin-bottom: 14px;">
+                Manual review of the late-round footage caught the AI mislabeling the referee (in the blue shirt) as a boxer once he entered the ring during the stoppage. The MediaPipe single-pose model picks the most prominent person each frame &mdash; when the ref steps between fighters, the model swaps onto him, and his stance/posture gets reported as Jose's.
+            </p>
+            <ul>
+                <li><strong>Affected window:</strong> approx. 7:30 onward (round 7 stoppage and post-fight)</li>
+                <li><strong>Misleading detections:</strong> "Trunk Leaning Backward" and "Static Head" highlights near the end of the reel are likely the ref, not Jose</li>
+                <li><strong>NOT affected:</strong> all rounds 1&ndash;6 detections &mdash; the ref is outside the frame center for the entire competitive portion of the fight</li>
+                <li><strong>Action taken:</strong> a clean re-analysis was run on rounds 1&ndash;7 only (stopping at the body-shot KO before the ref enters)</li>
+                <li><strong>Headline numbers UNCHANGED</strong> &mdash; chin-up 100%, narrow stance 78%, flared elbows 50&ndash;58% are all from rounds 1&ndash;6 where Jose owns the frame alone</li>
+            </ul>
+        </div>
+
+        <div class="gameplan-card" style="border-color: var(--green); margin-top: 20px;">
+            <h3 style="color: var(--green);">Why this still matters &mdash; the camp takeaway is unchanged</h3>
+            <ul>
+                <li>Every flaw was confirmed BEFORE the ref ever entered the picture</li>
+                <li>The Conceicao knockout itself happened around 7:30 &mdash; well within the clean-data window</li>
+                <li>The Morales loss in Dec 2024 corroborated the same pattern independently</li>
+                <li>Manual review (your eyes) caught what the AI missed &mdash; that's the whole point of human-in-the-loop scouting</li>
+            </ul>
+        </div>
+
+        <div class="gameplan-card" style="margin-top: 20px;">
+            <h3>Tool improvement plan</h3>
+            <ul>
+                <li>Use <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">analyze_two.py</code> for two-fighter tracking on future fights</li>
+                <li>Add a "person filter" by clothing color (Jose has tattoos, ref has blue shirt &mdash; trainable)</li>
+                <li>Cap analysis duration at the stoppage timestamp when known</li>
+                <li>Flag pose tracker identity-swaps via sudden landmark jumps between frames</li>
+            </ul>
         </div>
     </div>
 </div>
