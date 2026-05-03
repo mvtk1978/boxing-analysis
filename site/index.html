@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fight Analysis: Jose Ivan Guardado Ortiz | Otar Eranosyan Camp</title>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --card: #12121a;
+            --accent: #e63946;
+            --accent2: #f4a261;
+            --text: #e8e8e8;
+            --muted: #8a8a9a;
+            --green: #2a9d8f;
+            --border: #1e1e2e;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1a0a0a 0%, #0a0a1a 50%, #0a1a0a 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(230,57,70,0.1) 0%, transparent 70%);
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .hero h1 span { color: var(--accent); }
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--muted);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-critical { background: var(--accent); color: white; }
+        .badge-warning { background: var(--accent2); color: #000; }
+        .badge-info { background: var(--green); color: white; }
+        .badge-camp { background: #457b9d; color: white; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* Fighters comparison */
+        .fighters {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            padding: 40px 20px;
+            align-items: start;
+        }
+        .fighter-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+        .fighter-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+        .fighter-card .nickname {
+            color: var(--accent2);
+            font-style: italic;
+            margin-bottom: 16px;
+        }
+        .fighter-card.target { border-color: var(--accent); }
+        .fighter-card.our-guy { border-color: var(--green); }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .stat-row .label { color: var(--muted); }
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            padding-top: 80px;
+        }
+
+        /* Fault analysis section */
+        .section {
+            padding: 50px 20px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .section-subtitle {
+            color: var(--muted);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* Fault bars */
+        .fault-list { display: flex; flex-direction: column; gap: 16px; }
+        .fault-item {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .fault-item:hover { border-color: var(--accent); }
+        .fault-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .fault-name { font-weight: 700; font-size: 1.05rem; }
+        .fault-pct { font-weight: 800; font-size: 1.2rem; }
+        .fault-bar-bg {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .fault-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+        .fault-bar.critical { background: linear-gradient(90deg, var(--accent), #ff6b6b); }
+        .fault-bar.warning { background: linear-gradient(90deg, var(--accent2), #ffd166); }
+        .fault-description {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .fault-exploit {
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: rgba(230,57,70,0.08);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 6px 6px 0;
+            font-size: 0.88rem;
+        }
+        .fault-exploit strong { color: var(--accent); }
+
+        /* Video embed */
+        .video-section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+        }
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Timestamp links */
+        .timestamps {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .timestamp-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: start;
+            text-decoration: none;
+            color: var(--text);
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .timestamp-card:hover {
+            border-color: var(--accent);
+            background: rgba(230,57,70,0.05);
+        }
+        .ts-time {
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ts-desc { font-size: 0.85rem; }
+
+        /* Game plan */
+        .gameplan {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .gameplan-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+        .gameplan-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gameplan-card ul {
+            list-style: none;
+            font-size: 0.9rem;
+        }
+        .gameplan-card li {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            padding-left: 16px;
+            position: relative;
+        }
+        .gameplan-card li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .gameplan-card li:last-child { border-bottom: none; }
+
+        /* Summary stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .stat-card .number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-card .number.red { color: var(--accent); }
+        .stat-card .number.orange { color: var(--accent2); }
+        .stat-card .number.green { color: var(--green); }
+        .stat-card .desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .fighters { grid-template-columns: 1fr; }
+            .vs-divider { padding-top: 0; font-size: 1.5rem; }
+            .hero h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="container">
+        <p style="margin-bottom:12px; position:relative;">
+            <span class="badge badge-camp">CAMP PREPARATION</span>
+        </p>
+        <h1>Scouting Report: <span>Jose Ivan Guardado Ortiz</span></h1>
+        <p class="subtitle">AI-Powered Video Analysis for Otar "Pitbull" Eranosyan's Fight Camp</p>
+        <p style="color: var(--muted); font-size: 0.85rem; position:relative;">
+            Source fight: Conceicao vs Guardado | April 13, 2024 | Super Featherweight 130 lbs
+        </p>
+    </div>
+</div>
+
+<!-- KEY STATS -->
+<div class="container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number red">93.4%</div>
+            <div class="desc">Frames with faults</div>
+        </div>
+        <div class="stat-card">
+            <div class="number red">100%</div>
+            <div class="desc">Chin exposed rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="number orange">77.8%</div>
+            <div class="desc">Narrow stance</div>
+        </div>
+        <div class="stat-card">
+            <div class="number orange">57.8%</div>
+            <div class="desc">Rear elbow flared</div>
+        </div>
+        <div class="stat-card">
+            <div class="number orange">48.9%</div>
+            <div class="desc">Lead elbow flared</div>
+        </div>
+        <div class="stat-card">
+            <div class="number green">14,942</div>
+            <div class="desc">Frames analyzed</div>
+        </div>
+    </div>
+</div>
+
+<!-- FIGHTERS COMPARISON -->
+<div class="container">
+    <div class="fighters">
+        <div class="fighter-card target">
+            <p><span class="badge badge-critical">TARGET</span></p>
+            <h2>Jose Ivan Guardado Ortiz</h2>
+            <p class="nickname">"El Guardado"</p>
+            <div class="stat-row"><span class="label">Record</span><span>16-3-1 (5 KO)</span></div>
+            <div class="stat-row"><span class="label">Age</span><span>27 (born Mar 3, 1999)</span></div>
+            <div class="stat-row"><span class="label">From</span><span>Ensenada, Baja California, MX</span></div>
+            <div class="stat-row"><span class="label">Height</span><span>5'9" / 175 cm</span></div>
+            <div class="stat-row"><span class="label">Weight</span><span>Super Featherweight (130 lbs)</span></div>
+            <div class="stat-row"><span class="label">Stance</span><span>Orthodox</span></div>
+            <div class="stat-row"><span class="label">KO Rate</span><span>33%</span></div>
+            <div class="stat-row"><span class="label">Pro Since</span><span>October 2017</span></div>
+            <div class="stat-row"><span class="label">Current Streak</span><span style="color: var(--accent);">2 Losses (TKO R7, RTD R7)</span></div>
+            <div class="stat-row"><span class="label">Last Loss</span><span>Dec 2024 vs Victor Morales (RTD R7)</span></div>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="fighter-card our-guy">
+            <p><span class="badge badge-info">OUR FIGHTER</span></p>
+            <h2>Otar Eranosyan</h2>
+            <p class="nickname">"Pitbull"</p>
+            <div class="stat-row"><span class="label">Record</span><span>14-0 (7 KO)</span></div>
+            <div class="stat-row"><span class="label">Age</span><span>32 (born Aug 20, 1993)</span></div>
+            <div class="stat-row"><span class="label">From</span><span>Akhalkalaki, Georgia</span></div>
+            <div class="stat-row"><span class="label">Height</span><span>5'5" / 165 cm</span></div>
+            <div class="stat-row"><span class="label">Weight</span><span>Super Featherweight (130 lbs)</span></div>
+            <div class="stat-row"><span class="label">Stance</span><span>Orthodox</span></div>
+            <div class="stat-row"><span class="label">KO Rate</span><span>50%</span></div>
+            <div class="stat-row"><span class="label">Titles</span><span>WBA Cont. Americas SFW</span></div>
+            <div class="stat-row"><span class="label">Amateur</span><span>World Champs Bronze '17</span></div>
+            <div class="stat-row"><span class="label">Last Win</span><span>RTD R8 vs Roger Gutierrez</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- FULL FIGHT VIDEO -->
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Full Fight Video</h2>
+        <p class="section-subtitle">Conceicao vs Guardado Ortiz | April 13, 2024 | TKO R7 via body shot</p>
+        <div class="video-section">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/3RaX1sB3aJ8" allowfullscreen loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAULT ANALYSIS -->
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">AI Fault Detection <span class="badge badge-critical">MediaPipe Pose</span></h2>
+        <p class="section-subtitle">14,942 frames analyzed from the Conceicao fight. Faults detected in 93.4% of all frames.</p>
+
+        <div class="fault-list">
+
+            <!-- Fault 1: Chin Up -->
+            <div class="fault-item" id="chin-exposed">
+                <div class="fault-header">
+                    <span class="fault-name">Chin Up &mdash; Head Exposed</span>
+                    <span class="fault-pct" style="color: var(--accent);">100.0%</span>
+                </div>
+                <div class="fault-bar-bg">
+                    <div class="fault-bar critical" style="width: 100%;"></div>
+                </div>
+                <p class="fault-description">
+                    Guardado keeps his chin elevated throughout the entire fight. His chin_elevation metric exceeds the critical threshold (>0.20 normalized body height) consistently. He never tucks his chin, leaving his jaw as a permanent target for uppercuts and hooks.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> Guardado's exposed chin is his biggest vulnerability. Work behind the jab to set up the left hook to the chin. His head stays on the center line - time overhand rights when he's stationary. Uppercuts through the guard will land clean every time because his chin is always up.
+                </div>
+            </div>
+
+            <!-- Fault 2: Stance Too Narrow -->
+            <div class="fault-item" id="narrow-stance">
+                <div class="fault-header">
+                    <span class="fault-name">Stance Too Narrow</span>
+                    <span class="fault-pct" style="color: var(--accent);">77.8%</span>
+                </div>
+                <div class="fault-bar-bg">
+                    <div class="fault-bar critical" style="width: 77.8%;"></div>
+                </div>
+                <p class="fault-description">
+                    His feet are too close together in nearly 4 out of 5 frames. A narrow stance destroys balance and limits power generation. His ankle distance falls below 0.9x shoulder width most of the fight.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> Attack with aggressive pressure and combination punching. His narrow base means any significant shot will rock him off balance. Body shots will fold him because he can't brace properly. Push him to the ropes where his poor balance becomes fatal.
+                </div>
+            </div>
+
+            <!-- Fault 3: Rear Elbow Flared -->
+            <div class="fault-item" id="rear-elbow">
+                <div class="fault-header">
+                    <span class="fault-name">Rear Elbow Flared</span>
+                    <span class="fault-pct" style="color: var(--accent2);">57.8%</span>
+                </div>
+                <div class="fault-bar-bg">
+                    <div class="fault-bar warning" style="width: 57.8%;"></div>
+                </div>
+                <p class="fault-description">
+                    His rear elbow drifts away from his body in over half the fight, opening a corridor to his liver and ribs on the right side. The elbow angle exceeds 110 degrees frequently.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> The flared rear elbow creates a highway to his body. Left hooks to the liver will land through this gap consistently. This is exactly how Conceicao finished him - relentless body work through the flared elbow opening. Feint high, go low.
+                </div>
+            </div>
+
+            <!-- Fault 4: Lead Elbow Flared -->
+            <div class="fault-item" id="lead-elbow">
+                <div class="fault-header">
+                    <span class="fault-name">Lead Elbow Flared</span>
+                    <span class="fault-pct" style="color: var(--accent2);">48.9%</span>
+                </div>
+                <div class="fault-bar-bg">
+                    <div class="fault-bar warning" style="width: 48.9%;"></div>
+                </div>
+                <p class="fault-description">
+                    His lead elbow wings out in half the fight, leaving his left side exposed and reducing the structural integrity of his guard. Common during and after his punches.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> Counter with the right hand over his flared lead elbow. When his lead elbow lifts, step to the right and throw the straight right down the pipe. His lead-side body is also open - right hooks to the body under the flared elbow.
+                </div>
+            </div>
+
+            <!-- Fault 5: Lead Hand Too Low -->
+            <div class="fault-item" id="lead-hand-low">
+                <div class="fault-header">
+                    <span class="fault-name">Lead Hand Too Low</span>
+                    <span class="fault-pct" style="color: var(--accent2);">40.0%</span>
+                </div>
+                <div class="fault-bar-bg">
+                    <div class="fault-bar warning" style="width: 40%;"></div>
+                </div>
+                <p class="fault-description">
+                    His lead hand drops below the guard threshold in 40% of frames. This opens a direct path to his face with the right hand and removes his ability to parry incoming shots.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> When the lead hand drops, the straight right and overhand right both have a clear path. Jab to draw the lead hand down further, then come over the top with the right. He has no check hook defense when his hand drops.
+                </div>
+            </div>
+
+            <!-- Fault 6: Stance Too Wide (minor) -->
+            <div class="fault-item" id="wide-stance">
+                <div class="fault-header">
+                    <span class="fault-name">Stance Too Wide</span>
+                    <span class="fault-pct" style="color: var(--muted);">4.4%</span>
+                </div>
+                <div class="fault-bar-bg">
+                    <div class="fault-bar warning" style="width: 4.4%;"></div>
+                </div>
+                <p class="fault-description">
+                    Occasional overextension when lunging with punches. Minor issue but indicates he sometimes overcommits, creating counter opportunities.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> When he lunges and overextends, pivot off the line and counter. His wide moments come when he's desperate - expect this in later rounds when he's taking punishment.
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- KEY MOMENTS WITH TIMESTAMPS -->
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Key Video Moments</h2>
+        <p class="section-subtitle">Click timestamps to jump to critical moments in the fight showing Guardado's exploitable patterns</p>
+
+        <div class="timestamps">
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=30" target="_blank">
+                <span class="ts-time">0:30</span>
+                <span class="ts-desc"><strong>R1 Opening:</strong> Guardado's chin immediately high, lead hand low. Conceicao measures the jab distance.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=90" target="_blank">
+                <span class="ts-time">1:30</span>
+                <span class="ts-desc"><strong>R1-2:</strong> Static head on center line. Conceicao lands multiple jabs with zero defensive response.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=150" target="_blank">
+                <span class="ts-time">2:30</span>
+                <span class="ts-desc"><strong>R2-3:</strong> Rear elbow flares consistently. Conceicao starts targeting the body through the gap.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=210" target="_blank">
+                <span class="ts-time">3:30</span>
+                <span class="ts-desc"><strong>R3-4:</strong> Narrow stance causing balance breaks under combination pressure. No lateral movement.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=300" target="_blank">
+                <span class="ts-time">5:00</span>
+                <span class="ts-desc"><strong>R4-5:</strong> Lead hand dropping more frequently. Left eye swelling from straight rights he can't block.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=390" target="_blank">
+                <span class="ts-time">6:30</span>
+                <span class="ts-desc"><strong>R6:</strong> Successive left hands land clean through flared elbows. Body shots folding him.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=450" target="_blank">
+                <span class="ts-time">7:30</span>
+                <span class="ts-desc"><strong>R7 - The Finish:</strong> Brutal body shot drops Guardado. Same patterns exploited all fight lead to the stoppage.</span>
+            </a>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=500" target="_blank">
+                <span class="ts-time">8:20</span>
+                <span class="ts-desc"><strong>Post-fight:</strong> Guardado stays down from body shot. His narrow stance and flared elbows made this inevitable.</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- FIGHT RECAP -->
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Fight Recap: Conceicao vs Guardado</h2>
+        <p class="section-subtitle">April 13, 2024 | American Bank Center, Corpus Christi, TX | TKO Round 7</p>
+
+        <div class="gameplan" style="margin-bottom: 30px;">
+            <div class="gameplan-card">
+                <h3>What Conceicao Did Right</h3>
+                <ul>
+                    <li>Established the jab early and used it constantly to control distance</li>
+                    <li>Attacked the body relentlessly through Guardado's flared elbows</li>
+                    <li>Maintained aggressive pressure, never let Guardado set his feet</li>
+                    <li>Landed hard left hands in succession, targeting the exposed chin</li>
+                    <li>Built up body damage systematically until the R7 knockout shot</li>
+                </ul>
+            </div>
+            <div class="gameplan-card">
+                <h3>What Guardado Did Wrong</h3>
+                <ul>
+                    <li>Head glued to center line - zero lateral movement or slipping</li>
+                    <li>Chin up the entire fight - absorbed clean shots he should have avoided</li>
+                    <li>No offensive pressure - fight described as "a sparring session"</li>
+                    <li>Left eye swelling but made no defensive adjustments</li>
+                    <li>Narrow stance left him unable to absorb body shots properly</li>
+                    <li>Never established counters to disrupt opponent's rhythm</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="gameplan-card" style="border-color: var(--accent); margin-bottom: 20px;">
+            <h3 style="color: var(--accent);">Also Lost to Victor Morales Jr (Dec 2024)</h3>
+            <ul>
+                <li>Lost by retirement in round 7 - same pattern of accumulating damage</li>
+                <li>Morales (19-0-1, orthodox, 5'7") pressured him identically to Conceicao</li>
+                <li>Shows Guardado has NOT fixed these technical flaws between fights</li>
+                <li>Vulnerable fighters who can pressure and work the body beat him consistently</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- GAME PLAN FOR OTAR -->
+<div class="container">
+    <div class="section" style="background: linear-gradient(180deg, rgba(42,157,143,0.05) 0%, transparent 100%); border-radius: 16px; padding: 40px; margin-bottom: 40px;">
+        <h2 class="section-title" style="color: var(--green);">Fight Plan for Otar "Pitbull" Eranosyan</h2>
+        <p class="section-subtitle">Tactical game plan based on AI analysis of 14,942 frames</p>
+
+        <div class="gameplan">
+            <div class="gameplan-card" style="border-color: var(--green);">
+                <h3>Rounds 1-3: Establish Range</h3>
+                <ul>
+                    <li>Double and triple the jab - his lead hand is low 40% of the time</li>
+                    <li>Feint high to freeze him, then dig to the body through his flared elbows</li>
+                    <li>Work behind the jab to close distance (4" height disadvantage)</li>
+                    <li>Test his chin early - it's up 100% of the time, land the hook</li>
+                    <li>Apply forward pressure - he crumbles under sustained aggression</li>
+                </ul>
+            </div>
+            <div class="gameplan-card" style="border-color: var(--green);">
+                <h3>Rounds 4-6: Break Him Down</h3>
+                <ul>
+                    <li>Heavy body work through the rear elbow gap (57.8% flared)</li>
+                    <li>Left hook to liver is THE money shot - same as Conceicao's finish</li>
+                    <li>Push him to the ropes - narrow stance (77.8%) = no balance to escape</li>
+                    <li>He won't adjust - same flaws present in BOTH recent losses</li>
+                    <li>Combination punching: jab-cross-hook to overload his static defense</li>
+                </ul>
+            </div>
+            <div class="gameplan-card" style="border-color: var(--accent);">
+                <h3>Round 7+: Finish</h3>
+                <ul>
+                    <li>Both his losses came in round 7 - this is when he breaks</li>
+                    <li>Accumulate body damage rounds 1-6, then pour it on in 7</li>
+                    <li>His narrow stance + accumulated body damage = he'll fold</li>
+                    <li>Uppercuts when he shells up - his chin never tucks</li>
+                    <li>If he's on the ropes, unload - he has zero escape ability</li>
+                </ul>
+            </div>
+            <div class="gameplan-card" style="border-color: var(--accent2);">
+                <h3>Watch Out For</h3>
+                <ul>
+                    <li>4" height advantage - he's taller so manage distance carefully</li>
+                    <li>He has 16 wins - can be dangerous when throwing first</li>
+                    <li>Orthodox vs orthodox - stay disciplined with the jab</li>
+                    <li>Don't get drawn into exchanges at his range early</li>
+                    <li>His draw was early career - he's gotten more experienced since</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- METHODOLOGY -->
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Analysis Methodology</h2>
+        <p class="section-subtitle">How this report was generated</p>
+        <div class="gameplan-card" style="max-width: 700px;">
+            <h3>AI-Powered Pose Estimation</h3>
+            <ul>
+                <li>MediaPipe PoseLandmarker (33-point body skeleton per frame)</li>
+                <li>14,942 frames analyzed at 25 FPS from the full Conceicao fight</li>
+                <li>All metrics normalized by body height for scale invariance</li>
+                <li>Temporal analysis with 45-frame (1.5s) sliding window</li>
+                <li>6 distinct fault types detected with severity thresholds</li>
+                <li>Orthodox stance confirmed via shoulder/foot orientation analysis</li>
+                <li>Tool: <a href="https://github.com/mvtk1978/boxing-analysis" target="_blank" style="color: var(--accent);">boxing-analysis</a> (open source)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Generated for Otar "Pitbull" Eranosyan's fight camp | May 2026</p>
+    <p style="margin-top: 8px;">
+        Powered by <a href="https://github.com/mvtk1978/boxing-analysis">boxing-analysis</a> | AI video analysis using MediaPipe + OpenCV
+    </p>
+</footer>
+
+</body>
+</html>
