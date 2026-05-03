@@ -17,6 +17,9 @@ venv/
 *.avi
 *.mov
 
+# Allow per-fault reels in the deployed site
+!site/reels/*.mp4
+
 # Sample frames
 *.jpg
 *.png
