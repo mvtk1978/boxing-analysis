@@ -242,11 +242,11 @@ def draw_progress_bar(img, current, total, color=(50, 160, 80)):
 
 # ─── Pose helpers ────────────────────────────────────────────────────────────
 
-def build_landmarker(model_path):
+def build_landmarker(model_path, num_poses=3):
     opts = mp_vision.PoseLandmarkerOptions(
         base_options=mp_python.BaseOptions(model_asset_path=model_path),
         running_mode=mp_vision.RunningMode.VIDEO,
-        num_poses=1,
+        num_poses=num_poses,
         min_pose_detection_confidence=0.45,
         min_pose_presence_confidence=0.45,
         min_tracking_confidence=0.45,
@@ -254,11 +254,73 @@ def build_landmarker(model_path):
     return mp_vision.PoseLandmarker.create_from_options(opts)
 
 
+# Counters for diagnostics — printed at end of pass 1
+_FILTER_STATS = {"ref_skipped": 0, "no_pose": 0, "kept": 0}
+
+
+def _is_blue_shirt(frame_bgr, lms, w, h) -> bool:
+    """
+    Sample chest pixel color (between shoulders, ~40% down to hips).
+    Returns True if the patch is dominantly blue (referee shirt).
+    """
+    try:
+        ls = get_point(lms, LM.LEFT_SHOULDER,  w, h)
+        rs = get_point(lms, LM.RIGHT_SHOULDER, w, h)
+        lh = get_point(lms, LM.LEFT_HIP,       w, h)
+        rh = get_point(lms, LM.RIGHT_HIP,      w, h)
+    except Exception:
+        return False
+    sh_mid = (ls + rs) / 2
+    hp_mid = (lh + rh) / 2
+    chest  = (sh_mid * 0.6 + hp_mid * 0.4).astype(int)
+    cx, cy = int(chest[0]), int(chest[1])
+    cx = max(3, min(w - 4, cx))
+    cy = max(3, min(h - 4, cy))
+    patch = frame_bgr[cy-3:cy+4, cx-3:cx+4]
+    if patch.size == 0:
+        return False
+    avg = patch.reshape(-1, 3).mean(axis=0).astype(np.uint8)
+    hsv = cv2.cvtColor(np.uint8([[avg]]), cv2.COLOR_BGR2HSV)[0][0]
+    h_, s_, v_ = int(hsv[0]), int(hsv[1]), int(hsv[2])
+    # OpenCV hue is 0-180. Blue ≈ 100-135. Need decent saturation+value
+    # to avoid false positives on dark shadow / skin tones.
+    return (95 <= h_ <= 140) and s_ > 70 and v_ > 35
+
+
+def _bbox_area(lms) -> float:
+    xs = [lms[i].x for i in range(33)]
+    ys = [lms[i].y for i in range(33)]
+    return (max(xs) - min(xs)) * (max(ys) - min(ys))
+
+
 def detect(landmarker, frame_bgr, ts_ms):
+    """
+    Detect up to N poses, drop the referee (blue shirt), return the most
+    prominent remaining pose's landmarks (largest bbox).
+    """
     rgb    = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
     mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
     r      = landmarker.detect_for_video(mp_img, ts_ms)
-    return r.pose_landmarks[0] if r.pose_landmarks else None
+
+    if not r.pose_landmarks:
+        _FILTER_STATS["no_pose"] += 1
+        return None
+
+    h, w = frame_bgr.shape[:2]
+    keep = []
+    for pose in r.pose_landmarks:
+        if _is_blue_shirt(frame_bgr, pose, w, h):
+            _FILTER_STATS["ref_skipped"] += 1
+            continue
+        keep.append((_bbox_area(pose), pose))
+
+    if not keep:
+        _FILTER_STATS["no_pose"] += 1
+        return None
+
+    keep.sort(key=lambda x: -x[0])
+    _FILTER_STATS["kept"] += 1
+    return keep[0][1]
 
 
 # ─── Highlight selection (now operates on FrameMeta — no pixels needed) ──────
