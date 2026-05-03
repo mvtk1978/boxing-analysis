@@ -2,21 +2,24 @@
 """
 Boxing Highlight Reel Generator
 ================================
-Callout-ы вынесены в полосу снизу — видео не перекрывается.
-Структура кадра:
+Two-pass:
+  Pass 1 — analyze every frame, store ONLY landmarks + analysis + frame_idx
+           (NOT the frame pixels — that was the memory bomb).
+  Pass 2 — re-open the video, seek to relevant frame ranges, render with
+           skeleton/markers/callouts.
+
+Frame layout:
   ┌──────────────────┐
-  │                  │  ← чистое видео (только скелет + маркеры)
-  │    VIDEO AREA    │
-  │                  │
+  │   VIDEO AREA     │  ← clean video (only skeleton + markers)
   ├──────────────────┤
-  │  CALLOUT STRIP   │  ← текст, иконки, описание
+  │  CALLOUT STRIP   │  ← text, icons, description
   └──────────────────┘
 
 Usage:
   python highlight_reel.py <video_path> [--output reel.mp4] [--slowmo 4]
 """
 
-import os, argparse
+import os, sys, argparse, time
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -28,6 +31,9 @@ from typing import List, Optional
 from boxing_analyzer.pattern_detector import PatternDetector, FrameAnalysis, Fault
 from boxing_analyzer.landmarks import LM, get_point
 from boxing_analyzer.video_io import ensure_h264, download_youtube
+
+# Force unbuffered stdout so progress shows up in nohup logs immediately
+sys.stdout.reconfigure(line_buffering=True)
 
 FONT      = cv2.FONT_HERSHEY_SIMPLEX
 FONT_BOLD = cv2.FONT_HERSHEY_DUPLEX
@@ -48,28 +54,27 @@ CONNECTIONS = [
     (LM.RIGHT_KNEE,     LM.RIGHT_ANKLE),
 ]
 
-STRIP_H = 130   # height of callout strip below video
+STRIP_H = 130
 
-# ─────────────────────────────────────────────────────────────────────────────
+
+# ─── Lightweight per-frame record (NO pixels) ────────────────────────────────
 
 @dataclass
-class FrameData:
-    frame:    np.ndarray
-    lms:      object
+class FrameMeta:
+    """Stored once per frame in pass 1. ~2 KB instead of 2.6 MB."""
+    idx:      int
+    lms:      object              # MediaPipe NormalizedLandmark list (small)
     analysis: FrameAnalysis
 
 @dataclass
 class Highlight:
     frame_idx: int
     fault:     Fault
-    lms:       object
-    frame_img: np.ndarray
 
 
-# ─── Skeleton drawing ─────────────────────────────────────────────────────────
+# ─── Skeleton drawing ────────────────────────────────────────────────────────
 
 def draw_skeleton(img, lms, w, h, fault_lm_set):
-    """Skeleton only — no text on video."""
     ov = img.copy()
     for a, b in CONNECTIONS:
         try:
@@ -97,10 +102,6 @@ def draw_skeleton(img, lms, w, h, fault_lm_set):
 
 
 def draw_fault_markers(img, lms, w, h, faults, pulse):
-    """
-    Small numbered badges on fault joints + pulsing ring.
-    Numbers reference entries in the callout strip below.
-    """
     shown = {}
     n = 1
     for f in faults[:4]:
@@ -114,10 +115,8 @@ def draw_fault_markers(img, lms, w, h, faults, pulse):
     for lm_idx, num in shown.items():
         try:
             pt = get_point(lms, lm_idx, w, h).astype(int)
-            # Pulsing ring
             cv2.circle(img, tuple(pt), pr,     (0, 0, 220), 2, cv2.LINE_AA)
             cv2.circle(img, tuple(pt), pr + 4, (0, 0, 120), 1, cv2.LINE_AA)
-            # Number badge
             bx, by = pt[0] + 14, pt[1] - 14
             cv2.circle(img, (bx, by), 11, (0, 0, 180), -1, cv2.LINE_AA)
             cv2.circle(img, (bx, by), 11, (255, 255, 255), 1, cv2.LINE_AA)
@@ -127,19 +126,11 @@ def draw_fault_markers(img, lms, w, h, faults, pulse):
             pass
 
 
-# ─── Callout strip (below video) ─────────────────────────────────────────────
+# ─── Callout strip ───────────────────────────────────────────────────────────
 
-def make_callout_strip(w, faults: list, mode: str, progress: float,
-                       slowmo_factor: int = 1) -> np.ndarray:
-    """
-    Build the callout strip (w × STRIP_H).
-    mode: "normal" | "freeze" | "slowmo"
-    progress: 0→1 slide-in animation
-    """
+def make_callout_strip(w, faults, mode, progress, slowmo_factor=1):
     strip = np.zeros((STRIP_H, w, 3), dtype=np.uint8)
     strip[:] = (12, 12, 18)
-
-    # Top divider line
     cv2.line(strip, (0, 0), (w, 0), (40, 40, 60), 2)
 
     if mode == "normal" and not faults:
@@ -149,18 +140,13 @@ def make_callout_strip(w, faults: list, mode: str, progress: float,
 
     p = min(1.0, progress)
 
-    # Mode badge top-right
     if mode == "freeze":
-        badge_txt = "PAUSED"
-        badge_col = (40, 40, 160)
-        badge_tc  = (150, 150, 255)
+        badge_txt, badge_col, badge_tc = "PAUSED", (40, 40, 160), (150, 150, 255)
     elif mode == "slowmo":
         badge_txt = f"SLOW x1/{slowmo_factor}"
-        badge_col = (10, 60, 80)
-        badge_tc  = (0, 210, 255)
+        badge_col, badge_tc = (10, 60, 80), (0, 210, 255)
     else:
-        badge_txt = ""
-        badge_col = None
+        badge_txt = ""; badge_col = None
 
     if badge_col:
         (bw, bh), _ = cv2.getTextSize(badge_txt, FONT_BOLD, 0.5, 1)
@@ -172,38 +158,26 @@ def make_callout_strip(w, faults: list, mode: str, progress: float,
     if not faults:
         return strip
 
-    # Slide-in offset
     slide = int((1 - p) * 30)
-
-    # Layout: up to 3 faults side by side in columns
-    n        = min(len(faults), 3)
-    col_w    = w // n
-    y_top    = 14 + slide
+    n     = min(len(faults), 3)
+    col_w = w // n
+    y_top = 14 + slide
 
     for i, f in enumerate(faults[:n]):
         cx = i * col_w
-        # Separator between columns
         if i > 0:
             cv2.line(strip, (cx, 8), (cx, STRIP_H - 8), (40, 40, 55), 1)
-
-        # Number circle
         num_x, num_y = cx + 16, y_top + 12
         num_col = (0, 0, 180) if f.severity == "critical" else (0, 100, 180)
         cv2.circle(strip, (num_x, num_y), 11, num_col, -1, cv2.LINE_AA)
         cv2.putText(strip, str(i + 1), (num_x - 4, num_y + 5),
                     FONT_BOLD, 0.42, (255, 255, 255), 1, cv2.LINE_AA)
-
-        # Severity icon
         sev_txt = "[!!]" if f.severity == "critical" else "[!]"
         sev_col = (80, 80, 255) if f.severity == "critical" else (80, 160, 255)
         cv2.putText(strip, sev_txt, (cx + 32, y_top + 14),
                     FONT_BOLD, 0.44, sev_col, 1, cv2.LINE_AA)
-
-        # Fault name
         cv2.putText(strip, f.name, (cx + 8, y_top + 34),
                     FONT_BOLD, 0.46, (240, 240, 240), 1, cv2.LINE_AA)
-
-        # Description wrapped
         words = f.description.split()
         line, ty = "", y_top + 54
         max_chars = col_w // 7
@@ -220,19 +194,15 @@ def make_callout_strip(w, faults: list, mode: str, progress: float,
         if line:
             cv2.putText(strip, line, (cx + 8, ty),
                         FONT, 0.35, (170, 170, 170), 1, cv2.LINE_AA)
-
     return strip
 
 
-def make_summary_strip(w, session_summary: dict) -> np.ndarray:
-    """Compact summary strip shown during normal playback."""
+def make_summary_strip(w, session_summary):
     strip = np.zeros((STRIP_H, w, 3), dtype=np.uint8)
     strip[:] = (10, 10, 16)
     cv2.line(strip, (0, 0), (w, 0), (40, 40, 60), 2)
-
     cv2.putText(strip, "SESSION FAULTS", (8, 22),
                 FONT_BOLD, 0.50, (80, 80, 120), 1, cv2.LINE_AA)
-
     y = 42
     for name, pct in list(session_summary.items())[:4]:
         bar_w = int((pct / 100) * (w - 100))
@@ -248,12 +218,10 @@ def make_summary_strip(w, session_summary: dict) -> np.ndarray:
 
 
 def draw_top_banner(img, text, sub, progress):
-    """Thin top banner — fault name title."""
     w = img.shape[1]
     p  = min(1.0, progress)
     bh = 46
     by = int(-bh + p * bh)
-
     ov = img.copy()
     cv2.rectangle(ov, (0, by), (w, by + bh), (8, 8, 12), -1)
     cv2.rectangle(ov, (0, by + bh - 2), (w, by + bh), (0, 0, 180), 2)
@@ -272,7 +240,7 @@ def draw_progress_bar(img, current, total, color=(50, 160, 80)):
     cv2.rectangle(img, (0, h - 3), (bw, h), color, -1)
 
 
-# ─── Pose helpers ─────────────────────────────────────────────────────────────
+# ─── Pose helpers ────────────────────────────────────────────────────────────
 
 def build_landmarker(model_path):
     opts = mp_vision.PoseLandmarkerOptions(
@@ -293,20 +261,20 @@ def detect(landmarker, frame_bgr, ts_ms):
     return r.pose_landmarks[0] if r.pose_landmarks else None
 
 
-# ─── Highlight selection ──────────────────────────────────────────────────────
+# ─── Highlight selection (now operates on FrameMeta — no pixels needed) ──────
 
-def pick_highlights(frame_data: List[FrameData], min_gap=20) -> List[Highlight]:
-    total = len(frame_data)
-    by_fault: dict[str, list] = {}
-    for i, fd in enumerate(frame_data):
-        if fd.lms is None:
+def pick_highlights(metas: List[FrameMeta], min_gap=20) -> List[Highlight]:
+    total = len(metas)
+    by_fault: dict = {}
+    for fm in metas:
+        if fm.lms is None:
             continue
-        for f in fd.analysis.faults:
-            by_fault.setdefault(f.name, []).append((i, f, fd.lms, fd.frame))
+        for f in fm.analysis.faults:
+            by_fault.setdefault(f.name, []).append((fm.idx, f))
 
     def priority(name):
         entries = by_fault[name]
-        crit = any(f.severity == "critical" for _, f, _, _ in entries)
+        crit = any(f.severity == "critical" for _, f in entries)
         return (0 if crit else 1, -len(entries))
 
     candidates = []
@@ -322,101 +290,141 @@ def pick_highlights(frame_data: List[FrameData], min_gap=20) -> List[Highlight]:
                 candidates.append(max(bucket, key=lambda e: e[1].confidence))
 
     candidates.sort(key=lambda e: e[0])
-    highlights, last = [], -min_gap
-    for idx, fault, lms, frame_img in candidates:
+    out, last = [], -min_gap
+    for idx, fault in candidates:
         gap = min_gap // 2 if fault.severity == "critical" else min_gap
         if idx - last >= gap:
-            highlights.append(Highlight(idx, fault, lms, frame_img.copy()))
+            out.append(Highlight(idx, fault))
             last = idx
+    out.sort(key=lambda h: h.frame_idx)
+    return out
 
-    highlights.sort(key=lambda h: h.frame_idx)
-    return highlights
+
+# ─── Cached session summary computed ONCE at the end of pass 1 ───────────────
+
+def compute_session_summary(metas: List[FrameMeta]) -> dict:
+    counts: dict = {}
+    n = max(1, len(metas))
+    for fm in metas:
+        seen = set()
+        for f in fm.analysis.faults:
+            if f.name not in seen:
+                counts[f.name] = counts.get(f.name, 0) + 1
+                seen.add(f.name)
+    return {k: round(v / n * 100, 1)
+            for k, v in sorted(counts.items(), key=lambda x: -x[1])}
 
 
-# ─── Renderer ─────────────────────────────────────────────────────────────────
+# ─── Renderer (Pass 2) — re-reads frames from disk on demand ─────────────────
 
-def render(frame_data: List[FrameData],
+def render(src_path: str,
+           metas: List[FrameMeta],
            highlights: List[Highlight],
            output: str, fps: float, w: int, h: int,
-           slowmo: int, freeze_n: int, hold_n: int):
+           slowmo: int, freeze_n: int, hold_n: int,
+           start_f: int, scale: float):
     """
-    Output resolution: w × (h + STRIP_H)
-    Video area is always clean.
+    Pass 2 — opens a fresh VideoCapture and seeks for each frame as needed.
+    No frame pixels are held in RAM.
     """
     out_h  = h + STRIP_H
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     writer = cv2.VideoWriter(output, fourcc, fps, (w, out_h))
 
-    total    = len(frame_data)
-    hl_map   = {hl.frame_idx: hl for hl in highlights}
-    SLOWMO_R = 22   # frames around highlight shown in slowmo
-    session  = {}
-    pulse    = 0
-    i        = 0
-    written  = 0
+    cap = cv2.VideoCapture(src_path)
+    if start_f:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_f)
 
+    # Build a quick lookup: frame_idx -> meta
+    meta_by_idx = {fm.idx: fm for fm in metas}
+    hl_map      = {hl.frame_idx: hl for hl in highlights}
+
+    # Cache the session summary once
+    session = compute_session_summary(metas)
+    print(f"[Render] starting pass 2 — {len(metas)} frames, {len(highlights)} highlights",
+          flush=True)
+
+    SLOWMO_R = 22
+    pulse    = 0
+    written  = 0
+    total    = len(metas)
+
+    # State for sequential read
+    current_pos = start_f
+    last_status = time.time()
+
+    def read_frame_at(target_idx: int):
+        """Read frame at absolute idx. Seek only if not already there."""
+        nonlocal current_pos
+        if target_idx != current_pos:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, target_idx)
+            current_pos = target_idx
+        ret, frame = cap.read()
+        if not ret:
+            return None
+        current_pos += 1
+        if scale != 1.0:
+            frame = cv2.resize(frame, (w, h))
+        return frame
+
+    i = 0
     while i < total:
-        fd   = frame_data[i]
+        fm    = metas[i]
         pulse = (pulse + 5) % 360
 
-        # Rebuild session summary up to this point
-        from boxing_analyzer.pattern_detector import PatternDetector as _PD
-        # We already have analysis, just collect from history
-        session = _build_session(frame_data, i)
+        if time.time() - last_status > 5:
+            pct = i / max(1, total) * 100
+            print(f"  render frame {i}/{total} ({pct:.0f}%)  written={written}",
+                  flush=True)
+            last_status = time.time()
 
-        base = fd.frame.copy()
+        base = read_frame_at(fm.idx)
+        if base is None:
+            i += 1
+            continue
 
-        if fd.lms is not None:
-            fault_lms = {lm for f in fd.analysis.faults for lm in f.affected_landmarks}
-            draw_skeleton(base, fd.lms, w, h, fault_lms)
-            if fd.analysis.faults:
-                draw_fault_markers(base, fd.lms, w, h, fd.analysis.faults, pulse)
+        if fm.lms is not None:
+            fault_lms = {lm for f in fm.analysis.faults for lm in f.affected_landmarks}
+            draw_skeleton(base, fm.lms, w, h, fault_lms)
+            if fm.analysis.faults:
+                draw_fault_markers(base, fm.lms, w, h, fm.analysis.faults, pulse)
 
         if i in hl_map:
             hl = hl_map[i]
 
-            # ── Freeze + callout ──────────────────────────────────────────
+            # Freeze + callout
             for t in range(freeze_n + hold_n):
                 img = base.copy()
                 prog = min(1.0, t / max(1, freeze_n * 0.35))
-
-                sub = f"Frame {i}  |  {hl.fault.severity.upper()}  |  conf {hl.fault.confidence:.0%}"
+                sub  = f"Frame {fm.idx}  |  {hl.fault.severity.upper()}  |  conf {hl.fault.confidence:.0%}"
                 draw_top_banner(img, hl.fault.name.upper(), sub, min(1.0, t / 6))
                 draw_progress_bar(img, i, total, color=(0, 0, 200))
-
-                # Re-draw markers with animation
-                if hl.lms is not None:
-                    draw_fault_markers(img, hl.lms, w, h,
-                                       hl.fault_list if hasattr(hl, 'fault_list')
-                                       else [hl.fault], pulse + t * 3)
-
+                if fm.lms is not None:
+                    draw_fault_markers(img, fm.lms, w, h, [hl.fault], pulse + t * 3)
                 strip = make_callout_strip(w, [hl.fault], "freeze", prog)
-                combined = np.vstack([img, strip])
-                writer.write(combined)
+                writer.write(np.vstack([img, strip]))
                 written += 1
 
-            # ── Slowmo replay ─────────────────────────────────────────────
+            # Slowmo replay window
             slo_s = max(0, i - SLOWMO_R)
             slo_e = min(total, i + SLOWMO_R + 1)
 
             for j in range(slo_s, slo_e):
-                sfd  = frame_data[j]
-                simg = sfd.frame.copy()
-
-                if sfd.lms is not None:
-                    sfault_lms = {lm for f in sfd.analysis.faults
+                sfm  = metas[j]
+                simg = read_frame_at(sfm.idx)
+                if simg is None:
+                    continue
+                if sfm.lms is not None:
+                    sfault_lms = {lm for f in sfm.analysis.faults
                                   for lm in f.affected_landmarks}
-                    draw_skeleton(simg, sfd.lms, w, h, sfault_lms)
-                    if sfd.analysis.faults:
-                        draw_fault_markers(simg, sfd.lms, w, h,
-                                           sfd.analysis.faults, pulse)
-
+                    draw_skeleton(simg, sfm.lms, w, h, sfault_lms)
+                    if sfm.analysis.faults:
+                        draw_fault_markers(simg, sfm.lms, w, h,
+                                           sfm.analysis.faults, pulse)
                 draw_progress_bar(simg, j, total, color=(0, 180, 220))
-
-                faults_here = sfd.analysis.faults if sfd.lms else []
+                faults_here = sfm.analysis.faults if sfm.lms else []
                 strip = make_callout_strip(w, faults_here[:3], "slowmo", 1.0,
                                            slowmo_factor=slowmo)
-
                 combined = np.vstack([simg, strip])
                 for _ in range(slowmo):
                     writer.write(combined)
@@ -426,35 +434,20 @@ def render(frame_data: List[FrameData],
             continue
 
         else:
-            # Normal playback — summary strip
+            # Normal playback row — show cached summary strip
             draw_progress_bar(base, i, total)
             strip = make_summary_strip(w, session)
-            combined = np.vstack([base, strip])
-            writer.write(combined)
+            writer.write(np.vstack([base, strip]))
             written += 1
 
         i += 1
 
     writer.release()
-    print(f"[Render] {written} frames → {output}")
+    cap.release()
+    print(f"[Render] done — {written} frames → {output}", flush=True)
 
 
-def _build_session(frame_data, up_to):
-    counts: dict[str, int] = {}
-    n = min(up_to + 1, len(frame_data))
-    for fd in frame_data[:n]:
-        seen = set()
-        for f in fd.analysis.faults:
-            if f.name not in seen:
-                counts[f.name] = counts.get(f.name, 0) + 1
-                seen.add(f.name)
-    if n == 0:
-        return {}
-    return {k: round(v / n * 100, 1)
-            for k, v in sorted(counts.items(), key=lambda x: -x[1])}
-
-
-# ─── Main ─────────────────────────────────────────────────────────────────────
+# ─── Main ────────────────────────────────────────────────────────────────────
 
 def is_url(s):
     return s.startswith("http") and ("youtube.com" in s or "youtu.be" in s)
@@ -490,50 +483,71 @@ def main():
     if start_f:
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_f)
 
-    print(f"[Video] {os.path.basename(src)}  {W}x{H} @ {fps:.0f}fps")
+    print(f"[Video] {os.path.basename(src)}  {W}x{H} @ {fps:.0f}fps  total={total}",
+          flush=True)
 
     model = os.path.join(os.path.dirname(__file__), "pose_landmarker_full.task")
     lmrk  = build_landmarker(model)
     pat   = PatternDetector()
 
-    all_frames: List[FrameData] = []
+    # ── PASS 1: analyze, store ONLY metadata (no pixels) ──────────────────
+    print(f"[Pass 1] analyzing frames {start_f}..{end_f} (no pixels in RAM)",
+          flush=True)
+    metas: List[FrameMeta] = []
     fi = start_f
+    t0 = time.time()
+    last_status = t0
     while cap.isOpened() and fi < end_f:
         ret, frame = cap.read()
         if not ret:
             break
-        fi += 1
         if args.scale != 1.0:
             frame = cv2.resize(frame, (W, H))
         ts_ms    = int(fi * 1000 / fps)
         lms      = detect(lmrk, frame, ts_ms)
         analysis = pat.analyze(lms, W, H) if lms else FrameAnalysis()
-        all_frames.append(FrameData(frame, lms, analysis))
-        if len(all_frames) % 30 == 0:
-            pct = (fi - start_f) / max(1, end_f - start_f) * 100
-            print(f"  {fi}/{end_f} ({pct:.0f}%)")
-
+        metas.append(FrameMeta(idx=fi, lms=lms, analysis=analysis))
+        fi += 1
+        # Progress every 5s wall-clock
+        if time.time() - last_status > 5:
+            done = fi - start_f
+            pct  = done / max(1, end_f - start_f) * 100
+            rate = done / max(0.1, time.time() - t0)
+            eta  = (end_f - fi) / max(0.1, rate)
+            print(f"  frame {fi}/{end_f} ({pct:.0f}%) | {rate:.1f} fps | "
+                  f"ETA {eta:.0f}s | RAM-frames=0",
+                  flush=True)
+            last_status = time.time()
     cap.release()
     lmrk.close()
 
+    print(f"[Pass 1] done in {time.time()-t0:.0f}s — {len(metas)} frames analyzed",
+          flush=True)
+
     summary = pat.get_session_summary()
-    print("\n[Top faults]")
+    print("\n[Top faults]", flush=True)
     for name, pct in list(summary.items())[:5]:
-        print(f"  {name:<35} {pct:.1f}%")
+        print(f"  {name:<35} {pct:.1f}%", flush=True)
 
-    highlights = pick_highlights(all_frames, args.min_gap)
-    print(f"\n[Highlights] {len(highlights)} moments:")
+    highlights = pick_highlights(metas, args.min_gap)
+    print(f"\n[Highlights] {len(highlights)} moments selected:", flush=True)
     for hl in highlights:
-        print(f"  frame {hl.frame_idx:3d}  [{hl.fault.severity.upper()}] {hl.fault.name}")
+        print(f"  frame {hl.frame_idx:5d}  [{hl.fault.severity.upper():8s}] {hl.fault.name}",
+              flush=True)
 
-    print(f"\n[Rendering] → {args.output}")
-    render(all_frames, highlights, args.output,
+    # ── PASS 2: render, re-reading frames from disk on demand ─────────────
+    print(f"\n[Pass 2] rendering → {args.output}", flush=True)
+    t1 = time.time()
+    render(src, metas, highlights, args.output,
            fps, W, H,
            slowmo=args.slowmo,
            freeze_n=args.freeze,
-           hold_n=60)
+           hold_n=60,
+           start_f=start_f,
+           scale=args.scale)
+    print(f"[Pass 2] done in {time.time()-t1:.0f}s", flush=True)
 
-    print(f"\nDone: {args.output}")
+    print(f"\nDone: {args.output}", flush=True)
 
 
 if __name__ == "__main__":
