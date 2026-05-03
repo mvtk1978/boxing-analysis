@@ -876,21 +876,19 @@
     </div>
 </div>
 
-<!-- METHODOLOGY -->
+<!-- METHODOLOGY (brief tech credit) -->
 <div class="container">
     <div class="section">
-        <h2 class="section-title">Analysis Methodology</h2>
-        <p class="section-subtitle">How this report was generated</p>
+        <h2 class="section-title">How this report was made</h2>
         <div class="gameplan-card" style="max-width: 700px;">
-            <h3>AI-Powered Pose Estimation</h3>
             <ul>
-                <li>MediaPipe PoseLandmarker (33-point body skeleton per frame)</li>
-                <li>14,942 frames analyzed at 25 FPS from the full Conceicao fight</li>
-                <li>All metrics normalized by body height for scale invariance</li>
-                <li>Temporal analysis with 45-frame (1.5s) sliding window</li>
-                <li>6 distinct fault types detected with severity thresholds</li>
-                <li>Orthodox stance confirmed via shoulder/foot orientation analysis</li>
-                <li>Tool: <a href="https://github.com/mvtk1978/boxing-analysis" target="_blank" style="color: var(--accent);">boxing-analysis</a> (open source)</li>
+                <li>MediaPipe PoseLandmarker (33-point body skeleton per frame, 25 FPS)</li>
+                <li>10,475 frames analyzed across the actual fight (1:38&ndash;8:37)</li>
+                <li>Guardado isolated by black-shorts color filter (Conceição's green trunks excluded)</li>
+                <li>1,841 confirmed Guardado poses analyzed; rest discarded as referee, Conceição, or unconfirmable</li>
+                <li>9 fault detectors with critical / warning severity thresholds</li>
+                <li>Commentator quotes pulled from YouTube auto-captions, manually curated</li>
+                <li>Tool: <a href="https://github.com/mvtk1978/boxing-analysis" target="_blank" style="color: var(--accent);">github.com/mvtk1978/boxing-analysis</a> (open source)</li>
             </ul>
         </div>
     </div>
