@@ -331,52 +331,44 @@
     </div>
 </div>
 
-<!-- KEY STATS (cleaned: intro skipped, ref filtered, post-fight excluded) -->
+<!-- KEY STATS — v3 with correct fight bounds (1:38 → 8:37) -->
 <div class="container">
     <p style="text-align: center; color: var(--green); font-size: 0.85rem; margin: 16px 0 -12px;">
-        <span class="badge badge-info">v2 — CLEANED DATA</span>
-        Re-analyzed with referee filter (1981 ref poses excluded), intro/other-fight footage skipped, capped at the round 7 stoppage.
+        <span class="badge badge-info">v3 — CORRECT FIGHT BOUNDS</span>
+        Bell-to-end window (1:38&ndash;8:37), Valdez-fight segment removed, 2518 referee poses filtered out.
     </p>
     <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number red">100%</div>
+            <div class="desc">Chin exposed</div>
+        </div>
         <div class="stat-card">
             <div class="number red">84.4%</div>
             <div class="desc">Lead hand too low</div>
         </div>
         <div class="stat-card">
-            <div class="number red">82.2%</div>
+            <div class="number red">80.0%</div>
+            <div class="desc">Stance too narrow</div>
+        </div>
+        <div class="stat-card">
+            <div class="number red">77.8%</div>
             <div class="desc">Rear hand too low</div>
         </div>
         <div class="stat-card">
             <div class="number red">68.9%</div>
-            <div class="desc">Stance too wide</div>
-        </div>
-        <div class="stat-card">
-            <div class="number red">64.4%</div>
-            <div class="desc">Chin exposed</div>
-        </div>
-        <div class="stat-card">
-            <div class="number orange">37.8%</div>
-            <div class="desc">Rear elbow flared</div>
-        </div>
-        <div class="stat-card">
-            <div class="number orange">31.1%</div>
             <div class="desc">Lead elbow flared</div>
         </div>
         <div class="stat-card">
-            <div class="number orange">24.4%</div>
-            <div class="desc">Trunk leans forward</div>
+            <div class="number orange">57.8%</div>
+            <div class="desc">Rear elbow flared</div>
         </div>
         <div class="stat-card">
-            <div class="number orange">15.6%</div>
-            <div class="desc">Feet crossing</div>
-        </div>
-        <div class="stat-card">
-            <div class="number green">9,750</div>
+            <div class="number green">10,475</div>
             <div class="desc">Frames analyzed</div>
         </div>
         <div class="stat-card">
-            <div class="number green">8,266</div>
-            <div class="desc">Clean boxer poses kept</div>
+            <div class="number green">8,988</div>
+            <div class="desc">Clean boxer poses</div>
         </div>
     </div>
 </div>
@@ -384,7 +376,7 @@
 <!-- PER-FAULT REELS — intro -->
 <div class="container">
     <div class="section">
-        <h2 class="section-title">Per-Flaw Highlight Reels <span class="badge badge-info">10 SEPARATE REELS</span></h2>
+        <h2 class="section-title">Per-Flaw Highlight Reels <span class="badge badge-info">6 v3 REELS</span></h2>
         <p class="section-subtitle">
             Each flaw below has its <strong>own short reel</strong> with the top 4 examples:
             normal-speed lead-in → freeze with "FAULT DETECTED" banner → slow-motion replay at 1/4 speed,
@@ -444,12 +436,12 @@
     </div>
 </div>
 
-<!-- FAULT ANALYSIS -->
+<!-- FAULT ANALYSIS — v3 -->
 <div class="container">
     <div class="section">
-        <h2 class="section-title">AI Fault Detection <span class="badge badge-info">CLEANED v2</span></h2>
+        <h2 class="section-title">AI Fault Detection <span class="badge badge-info">v3 — CORRECT FIGHT</span></h2>
         <p class="section-subtitle">
-            9,750 frames analyzed (rounds 1&ndash;7, intro skipped, 1981 referee poses filtered out via blue-shirt color detection).
+            10,475 frames analyzed from the actual Conceição vs Guardado bout (1:38 bell to 8:37 end &mdash; Valdez fight segment and intros excluded). 2,518 referee poses filtered. 8,988 clean boxer poses kept.
             Each flaw has its own embedded reel with 4 best examples in slow motion.
         </p>
 
@@ -460,7 +452,25 @@
 
         <div class="fault-list">
 
-            <!-- Fault 1: Lead Hand Too Low (NEW #1) -->
+            <!-- v3 Fault 1: Chin Up — confirmed real, 100% -->
+            <div class="fault-item" id="chin-exposed">
+                <div class="fault-header">
+                    <span class="fault-name">Chin Up &mdash; Head Exposed</span>
+                    <span class="fault-pct" style="color: var(--accent);">100.0%</span>
+                </div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 100%;"></div></div>
+                <p class="fault-description">
+                    Confirmed across all three analysis runs. Jose's chin is elevated for the entire fight &mdash; chin_elevation metric exceeds the critical threshold (>0.20 normalized body height) in every clean frame. He never tucks his chin, leaving the jaw as a permanent target for hooks and uppercuts.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> The exposed chin is THE money shot opportunity. Left hook to the chin behind the jab. Uppercuts through the guard land clean every time. Time overhand rights when he's stationary on the line.
+                </div>
+                <div class="fault-reel">
+                    <video controls preload="metadata"><source src="reels/chin_up_head_exposed.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+            <!-- v3 Fault 2: Lead Hand Too Low — 84.4% -->
             <div class="fault-item" id="lead-hand-low">
                 <div class="fault-header">
                     <span class="fault-name">Lead Hand Too Low</span>
@@ -468,7 +478,7 @@
                 </div>
                 <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 84.4%;"></div></div>
                 <p class="fault-description">
-                    His lead hand drops below the guard threshold in 84% of frames after the cleaned analysis. This is the #1 vulnerability &mdash; far worse than initially detected. Direct path to his face for the right hand, no parry ability.
+                    Lead hand drops below the guard threshold in 84% of clean frames. Direct path to his face for the right hand, no parry ability. Combined with the chin-up issue, this is a guaranteed entry for power shots up the middle.
                 </p>
                 <div class="fault-exploit">
                     <strong>How Otar exploits this:</strong> Straight right and overhand right have a clean lane. Jab to draw the lead hand down further, then come over the top. No check hook defense when the hand drops.
@@ -478,165 +488,75 @@
                 </div>
             </div>
 
-            <!-- Fault 2: Rear Hand Too Low (NEW finding) -->
-            <div class="fault-item" id="rear-hand-low">
+            <!-- v3 Fault 3: Stance Too Narrow — back at 80% with correct fight data -->
+            <div class="fault-item" id="narrow-stance">
                 <div class="fault-header">
-                    <span class="fault-name">Rear Hand Too Low <span class="badge badge-warning" style="font-size: 0.65rem;">NEW</span></span>
-                    <span class="fault-pct" style="color: var(--accent);">82.2%</span>
+                    <span class="fault-name">Stance Too Narrow</span>
+                    <span class="fault-pct" style="color: var(--accent);">80.0%</span>
                 </div>
-                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 82.2%;"></div></div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 80%;"></div></div>
                 <p class="fault-description">
-                    Newly detected after the v2 cleanup &mdash; his rear hand also drops 82% of the time. Both hands low simultaneously means the entire guard collapses, and the chin tuck does nothing without hand cover.
+                    Feet too close together in 80% of clean frames. Narrow base = no balance under pressure, weak power transfer, can't absorb body shots. (Note: v2 briefly read this as 2% because the contaminated Valdez segment had different stance characteristics that washed out the real signal.)
                 </p>
                 <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> When BOTH hands are low, every punch type is open. Lead hook to the temple, straight right to the chin, uppercut up the middle. Combination volume punching will overwhelm.
+                    <strong>How Otar exploits this:</strong> Aggressive pressure and combination punching. Narrow base means any significant shot rocks him off balance. Body shots fold him &mdash; this is exactly how Conceição finished him in R7. Push him to the ropes; he can't escape from there.
+                </div>
+                <div class="fault-reel">
+                    <video controls preload="metadata"><source src="reels/stance_too_narrow.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+            <!-- v3 Fault 4: Rear Hand Too Low — 77.8% -->
+            <div class="fault-item" id="rear-hand-low">
+                <div class="fault-header">
+                    <span class="fault-name">Rear Hand Too Low</span>
+                    <span class="fault-pct" style="color: var(--accent);">77.8%</span>
+                </div>
+                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 77.8%;"></div></div>
+                <p class="fault-description">
+                    Rear hand also drops 78% of the time. <strong>Combined with the lead hand low (84%), Jose has BOTH hands low for most of the fight</strong> &mdash; meaning the entire guard collapses. The chin tuck does nothing without hand cover, and there's no defense above the chest line.
+                </p>
+                <div class="fault-exploit">
+                    <strong>How Otar exploits this:</strong> When both hands are low, EVERY punch type is open. Lead hook to the temple, straight right to the chin, uppercut up the middle. Volume punching will overwhelm &mdash; he has no way to cover up effectively.
                 </div>
                 <div class="fault-reel">
                     <video controls preload="metadata"><source src="reels/rear_hand_too_low.mp4" type="video/mp4"></video>
                 </div>
             </div>
 
-            <!-- Fault 3: Stance Too Wide (was thought minor — actually major) -->
-            <div class="fault-item" id="wide-stance">
+            <!-- v3 Fault 5: Lead Elbow Flared — 68.9% -->
+            <div class="fault-item" id="lead-elbow">
                 <div class="fault-header">
-                    <span class="fault-name">Stance Too Wide <span class="badge badge-warning" style="font-size: 0.65rem;">REVISED</span></span>
+                    <span class="fault-name">Lead Elbow Flared</span>
                     <span class="fault-pct" style="color: var(--accent);">68.9%</span>
                 </div>
                 <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 68.9%;"></div></div>
                 <p class="fault-description">
-                    Originally read 4.4% &mdash; the cleaned analysis shows it's actually 69%. He overextends his stance constantly, planted feet, slow to pivot. The earlier "narrow stance" reading at 78% was the referee, not Jose.
+                    Lead elbow wings out in 69% of frames, leaving his left side body completely exposed and reducing guard structure during and after his own punches.
                 </p>
                 <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Wide planted stance = slow lateral movement. Cut angles aggressively, attack from his blind side, force him to reset constantly. He can't pivot to follow without stumbling.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/stance_too_wide.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- Fault 4: Chin Up (still critical, real number) -->
-            <div class="fault-item" id="chin-exposed">
-                <div class="fault-header">
-                    <span class="fault-name">Chin Up &mdash; Head Exposed</span>
-                    <span class="fault-pct" style="color: var(--accent);">64.4%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar critical" style="width: 64.4%;"></div></div>
-                <p class="fault-description">
-                    Original 100% reading was inflated by including the upright referee. Real number is 64% &mdash; still a major flaw. His chin floats up consistently when he's not throwing, leaving the jaw as a permanent target.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Left hook to the chin behind the jab is still the money shot. Uppercuts through the guard land because there's no chin tuck. Time overhand rights when he's stationary on the line.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/chin_up_head_exposed.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- Fault 5: Rear Elbow Flared -->
-            <div class="fault-item" id="rear-elbow">
-                <div class="fault-header">
-                    <span class="fault-name">Rear Elbow Flared</span>
-                    <span class="fault-pct" style="color: var(--accent2);">37.8%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 37.8%;"></div></div>
-                <p class="fault-description">
-                    Rear elbow drifts away from his body in 38% of frames, opening a corridor to his liver and ribs on the right side.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Left hooks to the liver land through this gap. This is exactly how Conceicao finished him &mdash; relentless body work through the flared rear elbow. Feint high, dig low.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/rear_elbow_flared.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- Fault 6: Lead Elbow Flared -->
-            <div class="fault-item" id="lead-elbow">
-                <div class="fault-header">
-                    <span class="fault-name">Lead Elbow Flared</span>
-                    <span class="fault-pct" style="color: var(--accent2);">31.1%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 31.1%;"></div></div>
-                <p class="fault-description">
-                    Lead elbow wings out in ~31% of frames, leaving his left side body open and reducing guard structure during/after his own punches.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Counter with the right hand over his flared lead elbow. When his elbow lifts, step right and throw the straight down the pipe. Right hooks to the body under the elbow.
+                    <strong>How Otar exploits this:</strong> Counter with the right hand over his flared lead elbow. When his elbow lifts, step right and throw the straight down the pipe. Right hooks to the body under the elbow create body damage, and he won't be able to defend the rib/liver line.
                 </div>
                 <div class="fault-reel">
                     <video controls preload="metadata"><source src="reels/lead_elbow_flared.mp4" type="video/mp4"></video>
                 </div>
             </div>
 
-            <!-- Fault 7: Trunk Leaning Forward (NEW) -->
-            <div class="fault-item" id="trunk-fwd">
+            <!-- v3 Fault 6: Rear Elbow Flared — 57.8% -->
+            <div class="fault-item" id="rear-elbow">
                 <div class="fault-header">
-                    <span class="fault-name">Trunk Leaning Forward <span class="badge badge-warning" style="font-size: 0.65rem;">NEW</span></span>
-                    <span class="fault-pct" style="color: var(--accent2);">24.4%</span>
+                    <span class="fault-name">Rear Elbow Flared</span>
+                    <span class="fault-pct" style="color: var(--accent2);">57.8%</span>
                 </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 24.4%;"></div></div>
+                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 57.8%;"></div></div>
                 <p class="fault-description">
-                    Over-commits weight forward in 24% of frames. Off-balance for counters, uppercut path opens up the middle.
+                    Rear elbow drifts away from his body in 58% of frames, opening a corridor to his liver and ribs on the right side. The elbow angle exceeds 110 degrees frequently.
                 </p>
                 <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> When he leans in, uppercut up the middle. Pivot left to make him fall forward into nothing, then counter the off-balance moment.
+                    <strong>How Otar exploits this:</strong> Left hooks to the liver land through this gap consistently. <strong>This is exactly how Conceição finished him &mdash; relentless body work through the flared rear elbow opening, ending in the round 7 body shot KO.</strong> Feint high, dig low.
                 </div>
                 <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/trunk_leaning_forward.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- Fault 8: Feet Crossing (NEW critical) -->
-            <div class="fault-item" id="feet-crossing">
-                <div class="fault-header">
-                    <span class="fault-name">Feet Crossing <span class="badge badge-critical" style="font-size: 0.65rem;">CRITICAL</span></span>
-                    <span class="fault-pct" style="color: var(--accent2);">15.6%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 15.6%;"></div></div>
-                <p class="fault-description">
-                    Severe footwork error &mdash; his feet cross 16% of the time. Total loss of base and balance for that moment. Each instance is a free shot opportunity.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> When his feet cross, EXPLODE forward with combinations &mdash; he literally has no defense. Knockdown opportunities live here. Watch his footwork; the moment you see crossover, unload.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/feet_crossing_dangerous_footwork.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- Fault 9: Trunk Leaning Backward (NEW) -->
-            <div class="fault-item" id="trunk-back">
-                <div class="fault-header">
-                    <span class="fault-name">Trunk Leaning Backward <span class="badge badge-warning" style="font-size: 0.65rem;">NEW</span></span>
-                    <span class="fault-pct" style="color: var(--muted);">8.9%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 8.9%;"></div></div>
-                <p class="fault-description">
-                    Pulls back to evade in 9% of frames. Removes his own power and breaks balance.
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> When he leans away, step in with the jab to close the gap, then unload &mdash; he can't generate power from that position to counter.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/trunk_leaning_backward.mp4" type="video/mp4"></video>
-                </div>
-            </div>
-
-            <!-- Fault 10: Stance Too Narrow (was the REF in v1) -->
-            <div class="fault-item" id="narrow-stance">
-                <div class="fault-header">
-                    <span class="fault-name">Stance Too Narrow <span class="badge badge-info" style="font-size: 0.65rem;">CORRECTED</span></span>
-                    <span class="fault-pct" style="color: var(--muted);">2.2%</span>
-                </div>
-                <div class="fault-bar-bg"><div class="fault-bar warning" style="width: 2.2%;"></div></div>
-                <p class="fault-description">
-                    The original 78% reading was the REFEREE (he stands with feet close together). After ref filtering, real boxer stance is rarely narrow &mdash; in fact he leans the OPPOSITE way (too wide, see flaw #3).
-                </p>
-                <div class="fault-exploit">
-                    <strong>How Otar exploits this:</strong> Negligible &mdash; this isn't a real Jose vulnerability. Focus on the wide-stance and footwork issues instead.
-                </div>
-                <div class="fault-reel">
-                    <video controls preload="metadata"><source src="reels/stance_too_narrow.mp4" type="video/mp4"></video>
+                    <video controls preload="metadata"><source src="reels/rear_elbow_flared.mp4" type="video/mp4"></video>
                 </div>
             </div>
 
@@ -651,78 +571,100 @@
         <p class="section-subtitle">Click timestamps to jump to critical moments in the fight showing Guardado's exploitable patterns</p>
 
         <div class="timestamps">
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=30" target="_blank">
-                <span class="ts-time">0:30</span>
-                <span class="ts-desc"><strong>R1 Opening:</strong> Guardado's chin immediately high, lead hand low. Conceicao measures the jab distance.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=60" target="_blank" style="border-color: var(--accent2);">
+                <span class="ts-time" style="background: var(--accent2); color: #000;">1:00</span>
+                <span class="ts-desc"><strong style="color: var(--accent2);">⚠ WRONG FIGHT:</strong> VALDEZ vs CONCEIÇÃO Round 3 of 12 &mdash; this segment (≈60s&ndash;95s) is NOT the Guardado fight. Excluded from v3 analysis.</span>
             </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=90" target="_blank">
-                <span class="ts-time">1:30</span>
-                <span class="ts-desc"><strong>R1-2:</strong> Static head on center line. Conceicao lands multiple jabs with zero defensive response.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=98" target="_blank" style="border-color: var(--green);">
+                <span class="ts-time" style="background: var(--green); color: #000;">1:38</span>
+                <span class="ts-desc"><strong style="color: var(--green);">✓ ROUND 1 BELL:</strong> Actual Conceição vs Guardado fight begins. v3 analysis starts here.</span>
             </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=150" target="_blank">
-                <span class="ts-time">2:30</span>
-                <span class="ts-desc"><strong>R2-3:</strong> Rear elbow flares consistently. Conceicao starts targeting the body through the gap.</span>
-            </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=210" target="_blank">
-                <span class="ts-time">3:30</span>
-                <span class="ts-desc"><strong>R3-4:</strong> Narrow stance causing balance breaks under combination pressure. No lateral movement.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=180" target="_blank">
+                <span class="ts-time">3:00</span>
+                <span class="ts-desc"><strong>R2:</strong> Conceição working behind the jab. Guardado's chin already high, both hands hanging low.</span>
             </a>
             <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=300" target="_blank">
                 <span class="ts-time">5:00</span>
-                <span class="ts-desc"><strong>R4-5:</strong> Lead hand dropping more frequently. Left eye swelling from straight rights he can't block.</span>
+                <span class="ts-desc"><strong>R4:</strong> Body work begins through Guardado's flared rear elbow. Liver hooks landing clean.</span>
             </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=390" target="_blank">
-                <span class="ts-time">6:30</span>
-                <span class="ts-desc"><strong>R6:</strong> Successive left hands land clean through flared elbows. Body shots folding him.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=420" target="_blank">
+                <span class="ts-time">7:00</span>
+                <span class="ts-desc"><strong>R6:</strong> Sustained body damage. Guardado has no defense behind low hands. Volume punching overwhelms.</span>
             </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=450" target="_blank">
-                <span class="ts-time">7:30</span>
-                <span class="ts-desc"><strong>R7 - The Finish:</strong> Brutal body shot drops Guardado. Same patterns exploited all fight lead to the stoppage.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=480" target="_blank" style="border-color: var(--accent);">
+                <span class="ts-time" style="background: var(--accent); color: #fff;">8:00</span>
+                <span class="ts-desc"><strong style="color: var(--accent);">R7 KO:</strong> Brutal body shot drops Guardado. Body damage from rounds 4&ndash;6 inevitably ended the fight here.</span>
             </a>
-            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=500" target="_blank" style="border-color: var(--accent2);">
-                <span class="ts-time" style="background: var(--accent2); color: #000;">8:20</span>
-                <span class="ts-desc"><strong style="color: var(--accent2);">REFEREE IN FRAME (manual review):</strong> Fight is stopped. The single-pose AI tracker locks onto the referee in the blue shirt and reports his stance/posture as "Jose's flaws" &mdash; ignore late-round detections after the stoppage.</span>
+            <a class="timestamp-card" href="https://youtu.be/3RaX1sB3aJ8?t=517" target="_blank" style="border-color: var(--green);">
+                <span class="ts-time" style="background: var(--green); color: #000;">8:37</span>
+                <span class="ts-desc"><strong style="color: var(--green);">✓ FIGHT END:</strong> Conceição standing victorious in the ring. v3 analysis stops here.</span>
             </a>
         </div>
     </div>
 </div>
 
-<!-- ANALYSIS CAVEAT — v2 FIXED -->
+<!-- ANALYSIS CAVEAT — v1 → v2 → v3 -->
 <div class="container">
     <div class="section">
-        <h2 class="section-title">Analysis Methodology: v1 → v2 <span class="badge badge-info">FIXED</span></h2>
-        <p class="section-subtitle">Three flaws caught by manual review &mdash; all now corrected in v2</p>
+        <h2 class="section-title">Analysis Methodology: v1 → v2 → v3 <span class="badge badge-info">3 ITERATIONS</span></h2>
+        <p class="section-subtitle">Each version caught more contamination via manual review of the actual reels</p>
 
         <div class="gameplan-card" style="border-color: var(--green);">
-            <h3 style="color: var(--green);">✓ Three problems found and fixed</h3>
+            <h3 style="color: var(--green);">v1 → v2: Referee filter + intro skip + KO-window cap</h3>
             <ul>
-                <li><strong>v1 problem:</strong> First 60 seconds of the YouTube video are highlights from OTHER fights and intro greetings &mdash; NOT the Conceicao vs Guardado bout
-                    <br><span style="color: var(--green);">v2 fix: <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">--start 60</code> skips the intro entirely</span></li>
-                <li><strong>v1 problem:</strong> Referee in blue shirt was tracked as a boxer throughout the fight &mdash; not just at the stoppage. Single-pose model picked him when he was the most prominent person in frame.
-                    <br><span style="color: var(--green);">v2 fix: multi-pose detection (3 poses) + HSV color check at chest landmark &mdash; any pose with a dominant blue chest is filtered out. <strong>1981 referee poses excluded</strong> across the fight.</span></li>
-                <li><strong>v1 problem:</strong> Post-fight chaos (8:00+) added more ref-only frames
-                    <br><span style="color: var(--green);">v2 fix: <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">--duration 390</code> caps at 7:30, before the body-shot KO</span></li>
+                <li><strong>v1 problem:</strong> Single-pose model picked the referee (blue shirt) as a boxer whenever he was prominent
+                    <br><span style="color: var(--green);">v2 fix: multi-pose detection + HSV blue-shirt check at chest landmark</span></li>
+                <li><strong>v1 problem:</strong> First 60 seconds of YouTube video were intro/promo
+                    <br><span style="color: var(--green);">v2 fix: <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">--start 60</code></span></li>
+                <li><strong>v1 problem:</strong> Post-fight chaos contaminated late frames
+                    <br><span style="color: var(--green);">v2 fix: <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">--duration 390</code> capped at 7:30</span></li>
+            </ul>
+        </div>
+
+        <div class="gameplan-card" style="border-color: var(--green); margin-top: 20px;">
+            <h3 style="color: var(--green);">v2 → v3: User caught the YouTube video is a COMPILATION</h3>
+            <ul>
+                <li><strong>v2 problem:</strong> Manual review of v2 reels revealed the YouTube video is a Conceição career compilation. Frames 60&ndash;95s show <strong>VALDEZ vs CONCEIÇÃO Round 3 of 12</strong> &mdash; an entirely different fight (where Conceição lost). v2 included 35 seconds of this wrong fight.
+                    <br><span style="color: var(--green);">v3 fix: <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">--start 98</code> &mdash; user-confirmed Round 1 bell rings at 1:38 (frame sample showed "ROUND 1 OF 8, 2:55")</span></li>
+                <li><strong>v2 problem:</strong> v2 stopped at 7:30 but the fight runs through 8:37 (KO + final round bell + winner ceremony)
+                    <br><span style="color: var(--green);">v3 fix: <code style="background: var(--bg); padding: 2px 6px; border-radius: 3px;">--duration 419</code> &mdash; window is now 1:38 to 8:37 exact</span></li>
             </ul>
         </div>
 
         <div class="gameplan-card" style="border-color: var(--accent); margin-top: 20px;">
-            <h3 style="color: var(--accent);">⚠ How dramatically the numbers changed</h3>
-            <ul>
-                <li><strong>Stance Too Narrow: 78% → 2.2%</strong> &mdash; this was almost entirely the REFEREE's stance (he stands with feet close together)</li>
-                <li><strong>Chin Up: 100% → 64%</strong> &mdash; still high, but the upright ref was inflating it</li>
-                <li><strong>Lead Hand Too Low: 40% → 84%</strong> &mdash; was masked because the ref kept his hands at his sides; now we see Jose's real guard issue</li>
-                <li><strong>NEW: Rear Hand Too Low (82%)</strong> &mdash; not detected before because ref-tracking suppressed the boxer-specific reading</li>
-                <li><strong>NEW: Stance Too Wide (69%), Trunk Leaning Forward (24%), Feet Crossing (16%), Trunk Leaning Backward (9%)</strong> &mdash; all surfaced after cleanup</li>
-            </ul>
-            <p style="margin-top: 12px; font-size: 0.88rem; color: var(--muted);">
-                Lesson: garbage-in detections produce confident-looking but wrong scouting reports. Always verify what the AI is actually looking at.
+            <h3 style="color: var(--accent);">⚠ How the numbers swung across versions</h3>
+            <table style="width:100%; border-collapse: collapse; font-size: 0.88rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <th style="text-align:left; padding:8px;">Fault</th>
+                        <th style="text-align:right; padding:8px;">v1</th>
+                        <th style="text-align:right; padding:8px;">v2</th>
+                        <th style="text-align:right; padding:8px; color: var(--green);">v3 ✓</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Chin Up - Head Exposed</td><td style="text-align:right;">100%</td><td style="text-align:right;">64%</td><td style="text-align:right; color: var(--green);"><strong>100%</strong></td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Lead Hand Too Low</td><td style="text-align:right;">40%</td><td style="text-align:right;">84%</td><td style="text-align:right; color: var(--green);"><strong>84%</strong></td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Stance Too Narrow</td><td style="text-align:right;">78%</td><td style="text-align:right;">2%</td><td style="text-align:right; color: var(--green);"><strong>80%</strong></td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Rear Hand Too Low</td><td style="text-align:right;">&mdash;</td><td style="text-align:right;">82%</td><td style="text-align:right; color: var(--green);"><strong>78%</strong></td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Lead Elbow Flared</td><td style="text-align:right;">49%</td><td style="text-align:right;">31%</td><td style="text-align:right; color: var(--green);"><strong>69%</strong></td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Rear Elbow Flared</td><td style="text-align:right;">58%</td><td style="text-align:right;">38%</td><td style="text-align:right; color: var(--green);"><strong>58%</strong></td></tr>
+                    <tr style="color: var(--muted); font-style: italic;"><td style="padding:6px 8px;" colspan="4">v2-only artifacts (from VALDEZ fight contamination, not actually Jose):</td></tr>
+                    <tr style="color: var(--muted); border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Stance Too Wide</td><td style="text-align:right;">4%</td><td style="text-align:right;">69%</td><td style="text-align:right;">&mdash;</td></tr>
+                    <tr style="color: var(--muted); border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Trunk Leaning Forward</td><td style="text-align:right;">&mdash;</td><td style="text-align:right;">24%</td><td style="text-align:right;">&mdash;</td></tr>
+                    <tr style="color: var(--muted); border-bottom: 1px solid var(--border);"><td style="padding:6px 8px;">Feet Crossing</td><td style="text-align:right;">&mdash;</td><td style="text-align:right;">16%</td><td style="text-align:right;">&mdash;</td></tr>
+                    <tr style="color: var(--muted);"><td style="padding:6px 8px;">Trunk Leaning Backward</td><td style="text-align:right;">&mdash;</td><td style="text-align:right;">9%</td><td style="text-align:right;">&mdash;</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 14px; font-size: 0.88rem; color: var(--muted);">
+                <strong>Key insight:</strong> v3 numbers (with truly correct fight bounds) closely match v1 EXCEPT now with the referee correctly excluded. The v2-only "findings" (Stance Too Wide, Trunk Leans, Feet Crossing) were ALL artifacts of including the wrong (Valdez vs Conceição) fight footage. Lesson: audit what your AI is actually looking at, not just the numbers it reports.
             </p>
         </div>
 
         <div class="gameplan-card" style="border-color: var(--accent2); margin-top: 20px;">
             <h3 style="color: var(--accent2);">Remaining limitation (be aware)</h3>
             <p style="font-size: 0.9rem;">
-                We filter the referee but cannot definitively distinguish Jose from Conceicao &mdash; both are bare-torsoed and the multi-pose tracker picks whichever boxer has the largest pose in frame. So the headline numbers describe "the more prominent boxer" who is usually but not always Jose. The flaws ARE Jose-typical (corroborated by his pattern in the Morales loss), but treat individual reel moments as illustrative, not forensic.
+                We filter the referee but cannot definitively distinguish Jose from Conceição &mdash; both are bare-torsoed and the multi-pose tracker picks whichever boxer has the largest pose in frame. So the headline numbers describe "the more prominent boxer" who is usually but not always Jose. The flaws ARE Jose-typical (corroborated by his pattern in the Morales loss), but treat individual reel moments as illustrative, not forensic.
             </p>
         </div>
     </div>

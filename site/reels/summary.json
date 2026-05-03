@@ -1,20 +1,16 @@
 {
-  "frames_analyzed": 9750,
+  "frames_analyzed": 10475,
   "ref_filter_stats": {
-    "ref_skipped": 1981,
-    "no_pose_total": 1484,
-    "kept": 8266
+    "ref_skipped": 2518,
+    "no_pose_total": 1487,
+    "kept": 8988
   },
   "fault_percentages": {
+    "Chin Up - Head Exposed": 100.0,
     "Lead Hand Too Low": 84.4,
-    "Rear Hand Too Low": 82.2,
-    "Stance Too Wide": 68.9,
-    "Chin Up - Head Exposed": 64.4,
-    "Rear Elbow Flared": 37.8,
-    "Lead Elbow Flared": 31.1,
-    "Trunk Leaning Forward": 24.4,
-    "Feet Crossing - Dangerous Footwork": 15.6,
-    "Trunk Leaning Backward": 8.9,
-    "Stance Too Narrow": 2.2
+    "Stance Too Narrow": 80.0,
+    "Rear Hand Too Low": 77.8,
+    "Lead Elbow Flared": 68.9,
+    "Rear Elbow Flared": 57.8
   }
 }
