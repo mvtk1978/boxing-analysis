@@ -36,7 +36,7 @@ import per_fault_reels as pfr
 def build_pose_landmarker(model_path):
     opts = mp_vision.PoseLandmarkerOptions(
         base_options=mp_python.BaseOptions(model_asset_path=model_path),
-        running_mode=mp_vision.RunningMode.VIDEO,
+        running_mode=mp_vision.RunningMode.IMAGE,
         num_poses=1,
         min_pose_detection_confidence=0.4,
     )
@@ -55,7 +55,7 @@ def pose_on_bbox(landmarker, frame_bgr, box_xyxy, ts_ms, w, h, padding=0.10):
     canvas[y1:y2, x1:x2] = frame_bgr[y1:y2, x1:x2]
     rgb = cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB)
     mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
-    r = landmarker.detect_for_video(mp_img, ts_ms)
+    r = landmarker.detect(mp_img)
     return r.pose_landmarks[0] if r.pose_landmarks else None
 
 
@@ -155,27 +155,24 @@ def main():
             else:
                 full_metas.append(pfr.FrameMeta(idx=i, lms=None, analysis=FrameAnalysis()))
 
-        # full_metas keep their GLOBAL fm.idx (renderer uses that to seek
-        # source video). highlight.frame_idx is the position in the
-        # full_metas list (0..len-1) — that's what the renderer iterates.
-        highlights = []
+        # render_fault_reel takes a simple list of global frame indices
+        # (used as keys into meta_by_idx inside the renderer).
+        # If a fault detection didn't fire on the user's approved frame,
+        # we synthesize one so the renderer can still pick it up.
         for global_idx in approved_idxs:
-            list_idx = global_idx - min_i  # position in full_metas
             fm = meta_by_idx.get(global_idx)
-            fault_obj = None
             if fm and fm.lms:
-                for f in fm.analysis.faults:
-                    if f.name == fault_name:
-                        fault_obj = f; break
-            if fault_obj is None:
-                fault_obj = Fault(name=fault_name, severity="warning",
-                                  description="Manually approved",
-                                  affected_landmarks=[], confidence=0.5)
-            highlights.append(pfr.Highlight(frame_idx=list_idx, fault=fault_obj))
+                has_fault = any(f.name == fault_name for f in fm.analysis.faults)
+                if not has_fault:
+                    # Inject a synthetic Fault so the renderer can find it
+                    fm.analysis.faults.append(Fault(
+                        name=fault_name, severity="warning",
+                        description="Manually approved",
+                        affected_landmarks=[], confidence=0.5))
 
         out_path = os.path.join(args.outdir, f"{slug}.mp4")
         pfr.render_fault_reel(
-            args.source, full_metas, fault_name, highlights,
+            args.source, full_metas, fault_name, approved_idxs,
             out_path, fps, W, H, scale=1.0, slowmo=args.slowmo,
         )
         print(f"  → wrote {out_path}", flush=True)

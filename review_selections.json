@@ -1,0 +1,148 @@
+{
+  "generated": "2026-05-04T02:06:32.630Z",
+  "selections": {
+    "Lead Hand Too Low": {
+      "slug": "lead_hand_too_low",
+      "approved": [
+        {
+          "candidate_id": 5,
+          "frame_idx": 4400,
+          "time_sec": 176
+        },
+        {
+          "candidate_id": 6,
+          "frame_idx": 5345,
+          "time_sec": 213.8
+        }
+      ]
+    },
+    "Rear Hand Too Low": {
+      "slug": "rear_hand_too_low",
+      "approved": [
+        {
+          "candidate_id": 2,
+          "frame_idx": 3194,
+          "time_sec": 127.76
+        },
+        {
+          "candidate_id": 5,
+          "frame_idx": 4400,
+          "time_sec": 176
+        },
+        {
+          "candidate_id": 6,
+          "frame_idx": 5345,
+          "time_sec": 213.8
+        },
+        {
+          "candidate_id": 9,
+          "frame_idx": 7027,
+          "time_sec": 281.08
+        }
+      ]
+    },
+    "Chin Up - Head Exposed": {
+      "slug": "chin_up_head_exposed",
+      "approved": []
+    },
+    "Stance Too Narrow": {
+      "slug": "stance_too_narrow",
+      "approved": []
+    },
+    "Rear Elbow Flared": {
+      "slug": "rear_elbow_flared",
+      "approved": [
+        {
+          "candidate_id": 7,
+          "frame_idx": 8708,
+          "time_sec": 348.32
+        },
+        {
+          "candidate_id": 9,
+          "frame_idx": 9158,
+          "time_sec": 366.32
+        },
+        {
+          "candidate_id": 10,
+          "frame_idx": 10506,
+          "time_sec": 420.24
+        }
+      ]
+    },
+    "Lead Elbow Flared": {
+      "slug": "lead_elbow_flared",
+      "approved": [
+        {
+          "candidate_id": 1,
+          "frame_idx": 2607,
+          "time_sec": 104.28
+        },
+        {
+          "candidate_id": 2,
+          "frame_idx": 3231,
+          "time_sec": 129.24
+        },
+        {
+          "candidate_id": 4,
+          "frame_idx": 4400,
+          "time_sec": 176
+        }
+      ]
+    },
+    "Feet Crossing - Dangerous Footwork": {
+      "slug": "feet_crossing_dangerous_footwork",
+      "approved": [
+        {
+          "candidate_id": 5,
+          "frame_idx": 7386,
+          "time_sec": 295.44
+        }
+      ]
+    },
+    "Trunk Leaning Forward": {
+      "slug": "trunk_leaning_forward",
+      "approved": [
+        {
+          "candidate_id": 4,
+          "frame_idx": 3277,
+          "time_sec": 131.08
+        },
+        {
+          "candidate_id": 5,
+          "frame_idx": 7048,
+          "time_sec": 281.92
+        }
+      ]
+    },
+    "Stance Too Wide": {
+      "slug": "stance_too_wide",
+      "approved": [
+        {
+          "candidate_id": 1,
+          "frame_idx": 2623,
+          "time_sec": 104.92
+        },
+        {
+          "candidate_id": 4,
+          "frame_idx": 7139,
+          "time_sec": 285.56
+        },
+        {
+          "candidate_id": 9,
+          "frame_idx": 9136,
+          "time_sec": 365.44
+        }
+      ]
+    },
+    "Trunk Leaning Backward": {
+      "slug": "trunk_leaning_backward",
+      "approved": [
+        {
+          "candidate_id": 5,
+          "frame_idx": 11947,
+          "time_sec": 477.88
+        }
+      ]
+    }
+  }
+}
