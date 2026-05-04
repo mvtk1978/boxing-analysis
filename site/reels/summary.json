@@ -1,21 +1,21 @@
 {
   "method": "YOLOv8 + CLIP ReID (openai/clip-vit-large-patch14) + MediaPipe pose",
-  "frames_analyzed": 10475,
-  "guardado_pose_frames": 6682,
-  "no_match_frames": 600,
+  "frames_analyzed": 9550,
+  "guardado_pose_frames": 3459,
+  "no_match_frames": 4417,
   "no_persons_frames": 0,
   "similarity_threshold": 0.78,
   "fault_percentages": {
-    "Chin Up - Head Exposed": 88.9,
-    "Lead Hand Too Low": 80.0,
-    "Rear Elbow Flared": 73.3,
-    "Rear Hand Too Low": 71.1,
-    "Lead Elbow Flared": 62.2,
-    "Stance Too Wide": 44.4,
-    "Trunk Leaning Backward": 40.0,
-    "Feet Crossing - Dangerous Footwork": 28.9,
-    "Stance Too Narrow": 28.9,
-    "Trunk Leaning Forward": 4.4
+    "Lead Hand Too Low": 86.7,
+    "Rear Hand Too Low": 66.7,
+    "Rear Elbow Flared": 64.4,
+    "Stance Too Narrow": 60.0,
+    "Trunk Leaning Backward": 44.4,
+    "Lead Elbow Flared": 28.9,
+    "Stance Too Wide": 20.0,
+    "Feet Crossing - Dangerous Footwork": 17.8,
+    "Trunk Leaning Forward": 15.6,
+    "Chin Up - Head Exposed": 11.1
   },
   "seed_frame_times": [
     130.0

@@ -107,22 +107,40 @@ class CLIPReID:
               flush=True)
         return template
 
-    def best_match(self, frame_bgr, boxes_xyxy, threshold: float):
+    def best_match(self, frame_bgr, boxes_xyxy, threshold: float,
+                   negative_template=None, margin: float = 0.05):
         """
-        Return (best_box, best_similarity) or (None, similarity) if below threshold.
+        Return (best_box, sim_pos, sim_neg, margin_value) or (None, ...) if rejected.
+
+        Contrastive matching:
+          - Compute similarity to Guardado template (sim_pos) and Conceição
+            template (sim_neg) for every person.
+          - Score each person by (sim_pos - sim_neg) — explicitly punishes
+            Conceição-likeness.
+          - Accept the best person only if:
+              sim_pos >= threshold AND (sim_pos - sim_neg) >= margin
         """
         if self.template is None:
             raise RuntimeError("Template not built — call build_template first")
         if len(boxes_xyxy) == 0:
-            return None, -1.0
+            return None, -1.0, -1.0, 0.0
         feats = self.encode(frame_bgr, boxes_xyxy)  # (N, D)
-        sims = feats @ self.template  # cosine similarity since both L2-normalized
-        sims = sims.cpu().numpy()
-        best_idx = int(np.argmax(sims))
-        best_sim = float(sims[best_idx])
-        if best_sim < threshold:
-            return None, best_sim
-        return boxes_xyxy[best_idx], best_sim
+        sims_pos = (feats @ self.template).cpu().numpy()
+        if negative_template is not None:
+            sims_neg = (feats @ negative_template).cpu().numpy()
+        else:
+            sims_neg = np.zeros_like(sims_pos)
+
+        score = sims_pos - sims_neg
+        best_idx = int(np.argmax(score))
+        best_pos = float(sims_pos[best_idx])
+        best_neg = float(sims_neg[best_idx])
+        best_margin = best_pos - best_neg
+        if best_pos < threshold:
+            return None, best_pos, best_neg, best_margin
+        if negative_template is not None and best_margin < margin:
+            return None, best_pos, best_neg, best_margin
+        return boxes_xyxy[best_idx], best_pos, best_neg, best_margin
 
 
 # ─── YOLOv8 detection (no tracking needed; CLIP handles identity) ───────────
@@ -183,12 +201,18 @@ def main():
                    help="Time(s) of seed frame(s); pass multiple for robustness")
     p.add_argument("--seed-box",        type=str, action="append", required=True,
                    help="Manual seed bbox(es) 'x1,y1,x2,y2' for Guardado at each seed time")
+    p.add_argument("--neg-seed-time",   type=float, action="append", default=[],
+                   help="Time(s) of NEGATIVE seed (Conceição) frames")
+    p.add_argument("--neg-seed-box",    type=str, action="append", default=[],
+                   help="Bbox(es) for NEGATIVE seed (Conceição)")
     p.add_argument("--per-fault",       type=int, default=4)
     p.add_argument("--slowmo",          type=int, default=4)
     p.add_argument("--yolo",            default="x")
     p.add_argument("--clip",            default="openai/clip-vit-large-patch14")
-    p.add_argument("--threshold",       type=float, default=0.78,
+    p.add_argument("--threshold",       type=float, default=0.80,
                    help="Min cosine similarity to accept as Guardado")
+    p.add_argument("--margin",          type=float, default=0.05,
+                   help="Min (sim_pos - sim_neg) margin (only with negative seed)")
     p.add_argument("--save-debug",      action="store_true",
                    help="Save annotated debug frames every N frames")
     args = p.parse_args()
@@ -244,6 +268,35 @@ def main():
         sys.exit(1)
     reid.build_template(seed_crops)
 
+    # ── Build NEGATIVE template (Conceição) if provided ───────────────────
+    negative_template = None
+    if args.neg_seed_time and args.neg_seed_box:
+        if len(args.neg_seed_time) != len(args.neg_seed_box):
+            print("ERROR: neg-seed-time and neg-seed-box count mismatch", flush=True)
+            sys.exit(1)
+        print("\n[NegTemplate] extracting Conceição seed crop(s)", flush=True)
+        neg_crops = []
+        for stime, sbox_str in zip(args.neg_seed_time, args.neg_seed_box):
+            sbox = tuple(int(x) for x in sbox_str.split(","))
+            sframe_idx = int(stime * fps)
+            cap.set(cv2.CAP_PROP_POS_FRAMES, sframe_idx)
+            ret, frame = cap.read()
+            if not ret: continue
+            x1, y1, x2, y2 = sbox
+            crop = frame[y1:y2, x1:x2]
+            neg_crops.append(crop)
+            cv2.imwrite(os.path.join(args.outdir, f"_neg_seed_t{int(stime)}.jpg"), crop)
+            print(f"  neg seed t={stime}s bbox={sbox} -> crop {crop.shape}", flush=True)
+        # Build negative template using same encoder
+        all_neg_feats = []
+        for crop_bgr in neg_crops:
+            h_, w_ = crop_bgr.shape[:2]
+            f = reid.encode(crop_bgr, [[0, 0, w_, h_]])
+            all_neg_feats.append(f[0])
+        negative_template = torch.stack(all_neg_feats).mean(dim=0)
+        negative_template = negative_template / negative_template.norm()
+        print(f"  [NegTemplate] built from {len(neg_crops)} Conceição crop(s)", flush=True)
+
     # ── Pass 1: per-frame CLIP ReID + pose ───────────────────────────────
     print("\n[Pass 1] CLIP ReID + pose on Guardado", flush=True)
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_f)
@@ -270,8 +323,10 @@ def main():
             fi += 1
             continue
 
-        gbox, sim = reid.best_match(frame, boxes, args.threshold)
-        sim_log.append(sim)
+        gbox, sim_pos, sim_neg, margin = reid.best_match(
+            frame, boxes, args.threshold,
+            negative_template=negative_template, margin=args.margin)
+        sim_log.append(sim_pos)
 
         if gbox is None:
             no_match += 1
@@ -284,13 +339,14 @@ def main():
             analysis = detector.analyze(lms, W, H) if lms else FrameAnalysis()
             metas.append(pfr.FrameMeta(idx=fi, lms=lms, analysis=analysis))
 
-            # Debug image every 500 frames showing the chosen bbox
+            # Debug image every 500 frames
             if args.save_debug and fi % 500 == 0:
                 dbg = frame.copy()
                 x1, y1, x2, y2 = [int(v) for v in gbox]
                 cv2.rectangle(dbg, (x1, y1), (x2, y2), (0, 255, 0), 3)
-                cv2.putText(dbg, f"GUARDADO sim={sim:.2f}", (x1, max(20, y1-8)),
-                            cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+                label = f"GUARDADO pos={sim_pos:.2f} neg={sim_neg:.2f} margin={margin:.2f}"
+                cv2.putText(dbg, label, (x1, max(20, y1-8)),
+                            cv2.FONT_HERSHEY_DUPLEX, 0.6, (0, 255, 0), 2, cv2.LINE_AA)
                 cv2.imwrite(os.path.join(debug_dir, f"f{fi:05d}.jpg"), dbg)
 
         fi += 1
