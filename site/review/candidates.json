@@ -1,0 +1,1574 @@
+{
+  "Lead Hand Too Low": {
+    "slug": "lead_hand_too_low",
+    "percentage": 91.1,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 2547,
+        "time_sec": 101.88,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          291,
+          130,
+          591,
+          712
+        ],
+        "jpg": "candidates/lead_hand_too_low/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3194,
+        "time_sec": 127.76,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          981,
+          127,
+          1279,
+          712
+        ],
+        "jpg": "candidates/lead_hand_too_low/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 3282,
+        "time_sec": 131.28,
+        "confidence": 1.0,
+        "dinov2_margin": 0.041,
+        "bbox": [
+          62,
+          104,
+          313,
+          453
+        ],
+        "jpg": "candidates/lead_hand_too_low/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 3468,
+        "time_sec": 138.72,
+        "confidence": 1.0,
+        "dinov2_margin": 0.051,
+        "bbox": [
+          356,
+          40,
+          551,
+          245
+        ],
+        "jpg": "candidates/lead_hand_too_low/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 4400,
+        "time_sec": 176.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          724,
+          111,
+          1120,
+          712
+        ],
+        "jpg": "candidates/lead_hand_too_low/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 5345,
+        "time_sec": 213.8,
+        "confidence": 1.0,
+        "dinov2_margin": 0.056,
+        "bbox": [
+          128,
+          43,
+          446,
+          711
+        ],
+        "jpg": "candidates/lead_hand_too_low/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 5930,
+        "time_sec": 237.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          783,
+          129,
+          953,
+          327
+        ],
+        "jpg": "candidates/lead_hand_too_low/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 6151,
+        "time_sec": 246.04,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          352,
+          158,
+          737,
+          713
+        ],
+        "jpg": "candidates/lead_hand_too_low/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 6680,
+        "time_sec": 267.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.04,
+        "bbox": [
+          1,
+          1,
+          549,
+          705
+        ],
+        "jpg": "candidates/lead_hand_too_low/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 7033,
+        "time_sec": 281.32,
+        "confidence": 1.0,
+        "dinov2_margin": 0.048,
+        "bbox": [
+          214,
+          71,
+          528,
+          711
+        ],
+        "jpg": "candidates/lead_hand_too_low/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 7386,
+        "time_sec": 295.44,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          711,
+          173,
+          1084,
+          671
+        ],
+        "jpg": "candidates/lead_hand_too_low/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 8531,
+        "time_sec": 341.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          556,
+          104,
+          798,
+          647
+        ],
+        "jpg": "candidates/lead_hand_too_low/c12.jpg"
+      }
+    ]
+  },
+  "Rear Hand Too Low": {
+    "slug": "rear_hand_too_low",
+    "percentage": 77.8,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 2547,
+        "time_sec": 101.88,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          291,
+          130,
+          591,
+          712
+        ],
+        "jpg": "candidates/rear_hand_too_low/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3194,
+        "time_sec": 127.76,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          981,
+          127,
+          1279,
+          712
+        ],
+        "jpg": "candidates/rear_hand_too_low/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 3281,
+        "time_sec": 131.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          50,
+          101,
+          301,
+          451
+        ],
+        "jpg": "candidates/rear_hand_too_low/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 3460,
+        "time_sec": 138.4,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          361,
+          32,
+          558,
+          482
+        ],
+        "jpg": "candidates/rear_hand_too_low/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 4400,
+        "time_sec": 176.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          724,
+          111,
+          1120,
+          712
+        ],
+        "jpg": "candidates/rear_hand_too_low/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 5345,
+        "time_sec": 213.8,
+        "confidence": 1.0,
+        "dinov2_margin": 0.056,
+        "bbox": [
+          128,
+          43,
+          446,
+          711
+        ],
+        "jpg": "candidates/rear_hand_too_low/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 5930,
+        "time_sec": 237.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          783,
+          129,
+          953,
+          327
+        ],
+        "jpg": "candidates/rear_hand_too_low/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 6692,
+        "time_sec": 267.68,
+        "confidence": 1.0,
+        "dinov2_margin": 0.041,
+        "bbox": [
+          0,
+          0,
+          578,
+          707
+        ],
+        "jpg": "candidates/rear_hand_too_low/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 7027,
+        "time_sec": 281.08,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          263,
+          86,
+          560,
+          711
+        ],
+        "jpg": "candidates/rear_hand_too_low/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 7139,
+        "time_sec": 285.56,
+        "confidence": 1.0,
+        "dinov2_margin": 0.045,
+        "bbox": [
+          604,
+          212,
+          1029,
+          715
+        ],
+        "jpg": "candidates/rear_hand_too_low/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 7386,
+        "time_sec": 295.44,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          711,
+          173,
+          1084,
+          671
+        ],
+        "jpg": "candidates/rear_hand_too_low/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 8531,
+        "time_sec": 341.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          556,
+          104,
+          798,
+          647
+        ],
+        "jpg": "candidates/rear_hand_too_low/c12.jpg"
+      }
+    ]
+  },
+  "Chin Up - Head Exposed": {
+    "slug": "chin_up_head_exposed",
+    "percentage": 75.6,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 3194,
+        "time_sec": 127.76,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          981,
+          127,
+          1279,
+          712
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3281,
+        "time_sec": 131.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          50,
+          101,
+          301,
+          451
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 4400,
+        "time_sec": 176.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          724,
+          111,
+          1120,
+          712
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 5345,
+        "time_sec": 213.8,
+        "confidence": 1.0,
+        "dinov2_margin": 0.056,
+        "bbox": [
+          128,
+          43,
+          446,
+          711
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 7033,
+        "time_sec": 281.32,
+        "confidence": 1.0,
+        "dinov2_margin": 0.048,
+        "bbox": [
+          214,
+          71,
+          528,
+          711
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 8531,
+        "time_sec": 341.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          556,
+          104,
+          798,
+          647
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 8755,
+        "time_sec": 350.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.056,
+        "bbox": [
+          216,
+          272,
+          660,
+          710
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 9241,
+        "time_sec": 369.64,
+        "confidence": 1.0,
+        "dinov2_margin": 0.05,
+        "bbox": [
+          225,
+          87,
+          553,
+          711
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 9367,
+        "time_sec": 374.68,
+        "confidence": 1.0,
+        "dinov2_margin": 0.055,
+        "bbox": [
+          204,
+          118,
+          569,
+          712
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 9454,
+        "time_sec": 378.16,
+        "confidence": 1.0,
+        "dinov2_margin": 0.04,
+        "bbox": [
+          597,
+          150,
+          1076,
+          712
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 10330,
+        "time_sec": 413.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          179,
+          88,
+          571,
+          712
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 10504,
+        "time_sec": 420.16,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          331,
+          200,
+          634,
+          544
+        ],
+        "jpg": "candidates/chin_up_head_exposed/c12.jpg"
+      }
+    ]
+  },
+  "Stance Too Narrow": {
+    "slug": "stance_too_narrow",
+    "percentage": 53.3,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 3230,
+        "time_sec": 129.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.061,
+        "bbox": [
+          374,
+          81,
+          708,
+          708
+        ],
+        "jpg": "candidates/stance_too_narrow/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3460,
+        "time_sec": 138.4,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          361,
+          32,
+          558,
+          482
+        ],
+        "jpg": "candidates/stance_too_narrow/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 4447,
+        "time_sec": 177.88,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          545,
+          201,
+          889,
+          487
+        ],
+        "jpg": "candidates/stance_too_narrow/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 5345,
+        "time_sec": 213.8,
+        "confidence": 1.0,
+        "dinov2_margin": 0.056,
+        "bbox": [
+          128,
+          43,
+          446,
+          711
+        ],
+        "jpg": "candidates/stance_too_narrow/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 5930,
+        "time_sec": 237.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          783,
+          129,
+          953,
+          327
+        ],
+        "jpg": "candidates/stance_too_narrow/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 6151,
+        "time_sec": 246.04,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          352,
+          158,
+          737,
+          713
+        ],
+        "jpg": "candidates/stance_too_narrow/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 6565,
+        "time_sec": 262.6,
+        "confidence": 1.0,
+        "dinov2_margin": 0.054,
+        "bbox": [
+          434,
+          1,
+          963,
+          364
+        ],
+        "jpg": "candidates/stance_too_narrow/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 6681,
+        "time_sec": 267.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          1,
+          2,
+          549,
+          705
+        ],
+        "jpg": "candidates/stance_too_narrow/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 7027,
+        "time_sec": 281.08,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          263,
+          86,
+          560,
+          711
+        ],
+        "jpg": "candidates/stance_too_narrow/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 8708,
+        "time_sec": 348.32,
+        "confidence": 1.0,
+        "dinov2_margin": 0.054,
+        "bbox": [
+          264,
+          114,
+          646,
+          710
+        ],
+        "jpg": "candidates/stance_too_narrow/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 8811,
+        "time_sec": 352.44,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          0,
+          89,
+          478,
+          709
+        ],
+        "jpg": "candidates/stance_too_narrow/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 9252,
+        "time_sec": 370.08,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          175,
+          126,
+          606,
+          711
+        ],
+        "jpg": "candidates/stance_too_narrow/c12.jpg"
+      }
+    ]
+  },
+  "Rear Elbow Flared": {
+    "slug": "rear_elbow_flared",
+    "percentage": 51.1,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 2636,
+        "time_sec": 105.44,
+        "confidence": 1.0,
+        "dinov2_margin": 0.045,
+        "bbox": [
+          400,
+          204,
+          911,
+          712
+        ],
+        "jpg": "candidates/rear_elbow_flared/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3282,
+        "time_sec": 131.28,
+        "confidence": 1.0,
+        "dinov2_margin": 0.041,
+        "bbox": [
+          62,
+          104,
+          313,
+          453
+        ],
+        "jpg": "candidates/rear_elbow_flared/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 3460,
+        "time_sec": 138.4,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          361,
+          32,
+          558,
+          482
+        ],
+        "jpg": "candidates/rear_elbow_flared/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 4449,
+        "time_sec": 177.96,
+        "confidence": 1.0,
+        "dinov2_margin": 0.051,
+        "bbox": [
+          533,
+          180,
+          941,
+          497
+        ],
+        "jpg": "candidates/rear_elbow_flared/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 7025,
+        "time_sec": 281.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.051,
+        "bbox": [
+          286,
+          99,
+          606,
+          712
+        ],
+        "jpg": "candidates/rear_elbow_flared/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 8536,
+        "time_sec": 341.44,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          505,
+          103,
+          753,
+          652
+        ],
+        "jpg": "candidates/rear_elbow_flared/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 8708,
+        "time_sec": 348.32,
+        "confidence": 1.0,
+        "dinov2_margin": 0.054,
+        "bbox": [
+          264,
+          114,
+          646,
+          710
+        ],
+        "jpg": "candidates/rear_elbow_flared/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 8804,
+        "time_sec": 352.16,
+        "confidence": 1.0,
+        "dinov2_margin": 0.04,
+        "bbox": [
+          0,
+          104,
+          466,
+          710
+        ],
+        "jpg": "candidates/rear_elbow_flared/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 9158,
+        "time_sec": 366.32,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          0,
+          55,
+          311,
+          714
+        ],
+        "jpg": "candidates/rear_elbow_flared/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 10506,
+        "time_sec": 420.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.059,
+        "bbox": [
+          340,
+          233,
+          674,
+          580
+        ],
+        "jpg": "candidates/rear_elbow_flared/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 10856,
+        "time_sec": 434.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          983,
+          2,
+          1278,
+          709
+        ],
+        "jpg": "candidates/rear_elbow_flared/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 10965,
+        "time_sec": 438.6,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          0,
+          33,
+          502,
+          707
+        ],
+        "jpg": "candidates/rear_elbow_flared/c12.jpg"
+      }
+    ]
+  },
+  "Lead Elbow Flared": {
+    "slug": "lead_elbow_flared",
+    "percentage": 44.4,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 2607,
+        "time_sec": 104.28,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          48,
+          177,
+          492,
+          713
+        ],
+        "jpg": "candidates/lead_elbow_flared/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3231,
+        "time_sec": 129.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.06,
+        "bbox": [
+          363,
+          76,
+          694,
+          709
+        ],
+        "jpg": "candidates/lead_elbow_flared/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 3468,
+        "time_sec": 138.72,
+        "confidence": 1.0,
+        "dinov2_margin": 0.051,
+        "bbox": [
+          356,
+          40,
+          551,
+          245
+        ],
+        "jpg": "candidates/lead_elbow_flared/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 4400,
+        "time_sec": 176.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          724,
+          111,
+          1120,
+          712
+        ],
+        "jpg": "candidates/lead_elbow_flared/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 6681,
+        "time_sec": 267.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          1,
+          2,
+          549,
+          705
+        ],
+        "jpg": "candidates/lead_elbow_flared/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 7025,
+        "time_sec": 281.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.051,
+        "bbox": [
+          286,
+          99,
+          606,
+          712
+        ],
+        "jpg": "candidates/lead_elbow_flared/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 8536,
+        "time_sec": 341.44,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          505,
+          103,
+          753,
+          652
+        ],
+        "jpg": "candidates/lead_elbow_flared/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 8708,
+        "time_sec": 348.32,
+        "confidence": 1.0,
+        "dinov2_margin": 0.054,
+        "bbox": [
+          264,
+          114,
+          646,
+          710
+        ],
+        "jpg": "candidates/lead_elbow_flared/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 8804,
+        "time_sec": 352.16,
+        "confidence": 1.0,
+        "dinov2_margin": 0.04,
+        "bbox": [
+          0,
+          104,
+          466,
+          710
+        ],
+        "jpg": "candidates/lead_elbow_flared/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 10531,
+        "time_sec": 421.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          746,
+          64,
+          1188,
+          711
+        ],
+        "jpg": "candidates/lead_elbow_flared/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 10848,
+        "time_sec": 433.92,
+        "confidence": 1.0,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          993,
+          1,
+          1279,
+          709
+        ],
+        "jpg": "candidates/lead_elbow_flared/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 11001,
+        "time_sec": 440.04,
+        "confidence": 1.0,
+        "dinov2_margin": 0.047,
+        "bbox": [
+          0,
+          45,
+          225,
+          706
+        ],
+        "jpg": "candidates/lead_elbow_flared/c12.jpg"
+      }
+    ]
+  },
+  "Feet Crossing - Dangerous Footwork": {
+    "slug": "feet_crossing_dangerous_footwork",
+    "percentage": 20.0,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 3227,
+        "time_sec": 129.08,
+        "confidence": 0.85,
+        "dinov2_margin": 0.064,
+        "bbox": [
+          445,
+          152,
+          770,
+          709
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3325,
+        "time_sec": 133.0,
+        "confidence": 0.85,
+        "dinov2_margin": 0.04,
+        "bbox": [
+          281,
+          141,
+          494,
+          633
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 4473,
+        "time_sec": 178.92,
+        "confidence": 0.85,
+        "dinov2_margin": 0.047,
+        "bbox": [
+          478,
+          156,
+          678,
+          407
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 7043,
+        "time_sec": 281.72,
+        "confidence": 0.85,
+        "dinov2_margin": 0.08,
+        "bbox": [
+          205,
+          133,
+          629,
+          711
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 7386,
+        "time_sec": 295.44,
+        "confidence": 0.85,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          711,
+          173,
+          1084,
+          671
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 8531,
+        "time_sec": 341.24,
+        "confidence": 0.85,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          556,
+          104,
+          798,
+          647
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 8755,
+        "time_sec": 350.2,
+        "confidence": 0.85,
+        "dinov2_margin": 0.056,
+        "bbox": [
+          216,
+          272,
+          660,
+          710
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 9203,
+        "time_sec": 368.12,
+        "confidence": 0.85,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          338,
+          297,
+          698,
+          715
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 9286,
+        "time_sec": 371.44,
+        "confidence": 0.85,
+        "dinov2_margin": 0.045,
+        "bbox": [
+          383,
+          167,
+          682,
+          710
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 10370,
+        "time_sec": 414.8,
+        "confidence": 0.85,
+        "dinov2_margin": 0.041,
+        "bbox": [
+          945,
+          22,
+          1279,
+          712
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 10507,
+        "time_sec": 420.28,
+        "confidence": 0.85,
+        "dinov2_margin": 0.048,
+        "bbox": [
+          336,
+          259,
+          669,
+          712
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c11.jpg"
+      },
+      {
+        "candidate_id": 12,
+        "frame_idx": 10970,
+        "time_sec": 438.8,
+        "confidence": 0.85,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          12,
+          32,
+          498,
+          708
+        ],
+        "jpg": "candidates/feet_crossing_dangerous_footwork/c12.jpg"
+      }
+    ]
+  },
+  "Trunk Leaning Forward": {
+    "slug": "trunk_leaning_forward",
+    "percentage": 15.6,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 3467,
+        "time_sec": 138.68,
+        "confidence": 1.0,
+        "dinov2_margin": 0.049,
+        "bbox": [
+          362,
+          39,
+          553,
+          242
+        ],
+        "jpg": "candidates/trunk_leaning_forward/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 8756,
+        "time_sec": 350.24,
+        "confidence": 0.932,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          216,
+          217,
+          647,
+          704
+        ],
+        "jpg": "candidates/trunk_leaning_forward/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 10970,
+        "time_sec": 438.8,
+        "confidence": 0.785,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          12,
+          32,
+          498,
+          708
+        ],
+        "jpg": "candidates/trunk_leaning_forward/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 3277,
+        "time_sec": 131.08,
+        "confidence": 0.653,
+        "dinov2_margin": 0.061,
+        "bbox": [
+          210,
+          171,
+          679,
+          710
+        ],
+        "jpg": "candidates/trunk_leaning_forward/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 7048,
+        "time_sec": 281.92,
+        "confidence": 0.619,
+        "dinov2_margin": 0.07,
+        "bbox": [
+          224,
+          148,
+          651,
+          710
+        ],
+        "jpg": "candidates/trunk_leaning_forward/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 5393,
+        "time_sec": 215.72,
+        "confidence": 0.524,
+        "dinov2_margin": 0.041,
+        "bbox": [
+          267,
+          180,
+          639,
+          710
+        ],
+        "jpg": "candidates/trunk_leaning_forward/c06.jpg"
+      }
+    ]
+  },
+  "Stance Too Wide": {
+    "slug": "stance_too_wide",
+    "percentage": 6.7,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 2623,
+        "time_sec": 104.92,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          80,
+          173,
+          487,
+          714
+        ],
+        "jpg": "candidates/stance_too_wide/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 3248,
+        "time_sec": 129.92,
+        "confidence": 1.0,
+        "dinov2_margin": 0.075,
+        "bbox": [
+          253,
+          147,
+          641,
+          710
+        ],
+        "jpg": "candidates/stance_too_wide/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 7041,
+        "time_sec": 281.64,
+        "confidence": 1.0,
+        "dinov2_margin": 0.059,
+        "bbox": [
+          212,
+          114,
+          581,
+          711
+        ],
+        "jpg": "candidates/stance_too_wide/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 7139,
+        "time_sec": 285.56,
+        "confidence": 1.0,
+        "dinov2_margin": 0.045,
+        "bbox": [
+          604,
+          212,
+          1029,
+          715
+        ],
+        "jpg": "candidates/stance_too_wide/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 8531,
+        "time_sec": 341.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.044,
+        "bbox": [
+          556,
+          104,
+          798,
+          647
+        ],
+        "jpg": "candidates/stance_too_wide/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 8806,
+        "time_sec": 352.24,
+        "confidence": 1.0,
+        "dinov2_margin": 0.047,
+        "bbox": [
+          0,
+          31,
+          522,
+          710
+        ],
+        "jpg": "candidates/stance_too_wide/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 9230,
+        "time_sec": 369.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.06,
+        "bbox": [
+          224,
+          130,
+          562,
+          712
+        ],
+        "jpg": "candidates/stance_too_wide/c07.jpg"
+      },
+      {
+        "candidate_id": 8,
+        "frame_idx": 10504,
+        "time_sec": 420.16,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          331,
+          200,
+          634,
+          544
+        ],
+        "jpg": "candidates/stance_too_wide/c08.jpg"
+      },
+      {
+        "candidate_id": 9,
+        "frame_idx": 9136,
+        "time_sec": 365.44,
+        "confidence": 0.947,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          92,
+          109,
+          388,
+          713
+        ],
+        "jpg": "candidates/stance_too_wide/c09.jpg"
+      },
+      {
+        "candidate_id": 10,
+        "frame_idx": 10857,
+        "time_sec": 434.28,
+        "confidence": 0.9,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          985,
+          2,
+          1278,
+          709
+        ],
+        "jpg": "candidates/stance_too_wide/c10.jpg"
+      },
+      {
+        "candidate_id": 11,
+        "frame_idx": 5361,
+        "time_sec": 214.44,
+        "confidence": 0.576,
+        "dinov2_margin": 0.048,
+        "bbox": [
+          31,
+          117,
+          382,
+          713
+        ],
+        "jpg": "candidates/stance_too_wide/c11.jpg"
+      }
+    ]
+  },
+  "Trunk Leaning Backward": {
+    "slug": "trunk_leaning_backward",
+    "percentage": 6.7,
+    "candidates": [
+      {
+        "candidate_id": 1,
+        "frame_idx": 5930,
+        "time_sec": 237.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.046,
+        "bbox": [
+          783,
+          129,
+          953,
+          327
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c01.jpg"
+      },
+      {
+        "candidate_id": 2,
+        "frame_idx": 6565,
+        "time_sec": 262.6,
+        "confidence": 1.0,
+        "dinov2_margin": 0.054,
+        "bbox": [
+          434,
+          1,
+          963,
+          364
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c02.jpg"
+      },
+      {
+        "candidate_id": 3,
+        "frame_idx": 6680,
+        "time_sec": 267.2,
+        "confidence": 1.0,
+        "dinov2_margin": 0.04,
+        "bbox": [
+          1,
+          1,
+          549,
+          705
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c03.jpg"
+      },
+      {
+        "candidate_id": 4,
+        "frame_idx": 7025,
+        "time_sec": 281.0,
+        "confidence": 1.0,
+        "dinov2_margin": 0.051,
+        "bbox": [
+          286,
+          99,
+          606,
+          712
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c04.jpg"
+      },
+      {
+        "candidate_id": 5,
+        "frame_idx": 11947,
+        "time_sec": 477.88,
+        "confidence": 1.0,
+        "dinov2_margin": 0.043,
+        "bbox": [
+          459,
+          268,
+          989,
+          712
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c05.jpg"
+      },
+      {
+        "candidate_id": 6,
+        "frame_idx": 10505,
+        "time_sec": 420.2,
+        "confidence": 0.577,
+        "dinov2_margin": 0.052,
+        "bbox": [
+          335,
+          220,
+          650,
+          565
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c06.jpg"
+      },
+      {
+        "candidate_id": 7,
+        "frame_idx": 6151,
+        "time_sec": 246.04,
+        "confidence": 0.445,
+        "dinov2_margin": 0.042,
+        "bbox": [
+          352,
+          158,
+          737,
+          713
+        ],
+        "jpg": "candidates/trunk_leaning_backward/c07.jpg"
+      }
+    ]
+  }
+}

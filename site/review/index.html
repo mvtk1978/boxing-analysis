@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Highlight Review — Guardado Scouting</title>
+<style>
+:root {
+  --bg: #0a0a0f; --card: #12121a; --accent: #e63946; --green: #2a9d8f;
+  --orange: #f4a261; --text: #e8e8e8; --muted: #8a8a9a; --border: #1e1e2e;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+h1 { font-size: 1.6rem; margin-bottom: 4px; }
+.intro {
+  background: var(--card); padding: 18px 22px; border-radius: 8px;
+  border-left: 4px solid var(--accent); margin-bottom: 24px;
+  max-width: 900px;
+}
+.intro p { margin: 6px 0; font-size: 0.92rem; line-height: 1.5; }
+.intro code { background: var(--bg); padding: 2px 6px; border-radius: 3px; }
+
+.toolbar {
+  position: sticky; top: 0; background: var(--bg); padding: 14px 0;
+  border-bottom: 1px solid var(--border); z-index: 10;
+  display: flex; gap: 12px; align-items: center;
+}
+.toolbar button {
+  background: var(--accent); color: #fff; border: none; padding: 10px 18px;
+  border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem;
+}
+.toolbar button:hover { background: #ff5566; }
+.toolbar button.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+.stats { color: var(--muted); font-size: 0.85rem; margin-left: auto; }
+
+.fault-section {
+  background: var(--card); margin: 20px 0; padding: 18px 20px;
+  border-radius: 10px; border: 1px solid var(--border);
+}
+.fault-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.fault-header h2 { font-size: 1.15rem; }
+.fault-header .pct { color: var(--accent); font-weight: 800; font-size: 1.1rem; }
+.fault-actions { display: flex; gap: 8px; }
+.fault-actions button {
+  background: var(--card); color: var(--text); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; cursor: pointer;
+}
+.fault-actions button:hover { border-color: var(--accent); }
+
+.cand-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 14px;
+}
+.cand {
+  background: var(--bg); border: 2px solid var(--border); border-radius: 8px;
+  padding: 8px; cursor: pointer; transition: border-color 0.15s;
+}
+.cand img { width: 100%; display: block; border-radius: 4px; }
+.cand-meta {
+  margin-top: 8px; font-size: 0.78rem; color: var(--muted);
+  display: flex; justify-content: space-between;
+}
+.cand input[type="checkbox"] { display: none; }
+.cand.selected { border-color: var(--green); background: rgba(42,157,143,0.06); }
+.cand.selected::before {
+  content: "✓ APPROVED"; display: block; background: var(--green);
+  color: #000; font-weight: 800; font-size: 0.72rem; padding: 4px 8px;
+  border-radius: 4px; margin-bottom: 6px; text-align: center;
+}
+.cand.rejected { border-color: var(--accent); opacity: 0.55; }
+.cand.rejected::before {
+  content: "✗ REJECTED"; display: block; background: var(--accent);
+  color: #fff; font-weight: 800; font-size: 0.72rem; padding: 4px 8px;
+  border-radius: 4px; margin-bottom: 6px; text-align: center;
+}
+.cand .toggle-area {
+  display: flex; gap: 6px; margin-top: 6px;
+}
+.cand .toggle-area button {
+  flex: 1; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.78rem;
+  font-weight: 700; border: 1px solid var(--border); background: var(--card); color: var(--text);
+}
+.cand .toggle-area button.approve { color: var(--green); }
+.cand .toggle-area button.reject { color: var(--accent); }
+.cand .toggle-area button:hover { background: var(--border); }
+
+.empty {
+  text-align: center; padding: 60px 20px; color: var(--muted);
+  font-size: 1rem;
+}
+</style>
+</head>
+<body>
+
+<h1>Highlight Review &mdash; Guardado Scouting</h1>
+<div class="intro">
+<p><strong>Instructions:</strong> For each candidate moment below, click <code>✓ Approve</code> if the skeleton is on Guardado (black trunks, gold ENSENADA medallion) and the pose is reasonably accurate. Click <code>✗ Reject</code> if the skeleton is on Conceição (green "BRABO" trunks), the referee, a spectator, or is broken/inaccurate.</p>
+<p>You only need to approve the BEST 4 per fault &mdash; rejecting bad ones plus approving 4 good ones is enough. After review, click "Export selections" to download a JSON file. I'll use that to render the final reels with only your approved moments.</p>
+</div>
+
+<div class="toolbar">
+  <button id="approve-all">Approve all visible</button>
+  <button id="reject-all" class="secondary">Reject all visible</button>
+  <button id="export">⬇ Export selections (JSON)</button>
+  <span class="stats" id="stats">0 approved · 0 rejected · 0 pending</span>
+</div>
+
+<div id="content"></div>
+
+<script>
+let manifest = null;
+const state = {};  // { "fault_name": { "candidate_id": "approved" | "rejected" } }
+
+async function load() {
+  const resp = await fetch('candidates.json');
+  manifest = await resp.json();
+  render();
+  updateStats();
+}
+
+function render() {
+  const root = document.getElementById('content');
+  root.innerHTML = '';
+  if (!manifest || Object.keys(manifest).length === 0) {
+    root.innerHTML = '<div class="empty">No candidates loaded. Check candidates.json.</div>';
+    return;
+  }
+
+  for (const [faultName, info] of Object.entries(manifest)) {
+    const sec = document.createElement('section');
+    sec.className = 'fault-section';
+    state[faultName] = state[faultName] || {};
+
+    const header = document.createElement('div');
+    header.className = 'fault-header';
+    header.innerHTML = `
+      <h2>${faultName}</h2>
+      <div class="fault-actions">
+        <button data-fa="approve-all">✓ all</button>
+        <button data-fa="reject-all">✗ all</button>
+        <button data-fa="clear">clear</button>
+      </div>
+      <span class="pct">${info.percentage}%</span>
+    `;
+    sec.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'cand-grid';
+    info.candidates.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'cand';
+      const status = state[faultName][c.candidate_id];
+      if (status) card.classList.add(status);
+      card.innerHTML = `
+        <img src="${c.jpg}" loading="lazy" alt="">
+        <div class="cand-meta">
+          <span>#${c.candidate_id} | t=${c.time_sec}s</span>
+          <span>conf=${(c.confidence*100).toFixed(0)}% | margin=${c.dinov2_margin.toFixed(2)}</span>
+        </div>
+        <div class="toggle-area">
+          <button class="approve" data-cid="${c.candidate_id}" data-fault="${faultName}">✓ Approve</button>
+          <button class="reject" data-cid="${c.candidate_id}" data-fault="${faultName}">✗ Reject</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    sec.appendChild(grid);
+
+    // Per-fault bulk actions
+    header.querySelectorAll('button[data-fa]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.fa;
+        info.candidates.forEach(c => {
+          if (action === 'clear') delete state[faultName][c.candidate_id];
+          else state[faultName][c.candidate_id] = action === 'approve-all' ? 'selected' : 'rejected';
+        });
+        render(); updateStats();
+      });
+    });
+
+    root.appendChild(sec);
+  }
+
+  // Wire up per-card buttons
+  document.querySelectorAll('.cand .approve').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const f = btn.dataset.fault, cid = parseInt(btn.dataset.cid);
+      state[f][cid] = state[f][cid] === 'selected' ? undefined : 'selected';
+      if (state[f][cid] === undefined) delete state[f][cid];
+      render(); updateStats();
+    });
+  });
+  document.querySelectorAll('.cand .reject').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const f = btn.dataset.fault, cid = parseInt(btn.dataset.cid);
+      state[f][cid] = state[f][cid] === 'rejected' ? undefined : 'rejected';
+      if (state[f][cid] === undefined) delete state[f][cid];
+      render(); updateStats();
+    });
+  });
+}
+
+function updateStats() {
+  let approved = 0, rejected = 0, total = 0;
+  for (const [fault, info] of Object.entries(manifest || {})) {
+    info.candidates.forEach(c => {
+      total++;
+      const s = state[fault]?.[c.candidate_id];
+      if (s === 'selected') approved++;
+      else if (s === 'rejected') rejected++;
+    });
+  }
+  const pending = total - approved - rejected;
+  document.getElementById('stats').textContent =
+    `${approved} approved · ${rejected} rejected · ${pending} pending`;
+}
+
+document.getElementById('approve-all').addEventListener('click', () => {
+  for (const [fault, info] of Object.entries(manifest || {}))
+    info.candidates.forEach(c => state[fault][c.candidate_id] = 'selected');
+  render(); updateStats();
+});
+document.getElementById('reject-all').addEventListener('click', () => {
+  for (const [fault, info] of Object.entries(manifest || {}))
+    info.candidates.forEach(c => state[fault][c.candidate_id] = 'rejected');
+  render(); updateStats();
+});
+document.getElementById('export').addEventListener('click', () => {
+  const out = { generated: new Date().toISOString(), selections: {} };
+  for (const [fault, info] of Object.entries(manifest || {})) {
+    out.selections[fault] = {
+      slug: info.slug,
+      approved: info.candidates
+        .filter(c => state[fault]?.[c.candidate_id] === 'selected')
+        .map(c => ({ candidate_id: c.candidate_id, frame_idx: c.frame_idx, time_sec: c.time_sec })),
+    };
+  }
+  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'review_selections.json';
+  a.click();
+});
+
+load();
+</script>
+</body>
+</html>

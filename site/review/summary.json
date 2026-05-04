@@ -1,0 +1,20 @@
+{
+  "method": "YOLOv8 + DINOv2 ReID (facebook/dinov2-large) + MediaPipe pose",
+  "frames_analyzed": 9550,
+  "guardado_pose_frames": 316,
+  "no_match_frames": 9181,
+  "fault_percentages": {
+    "Lead Hand Too Low": 91.1,
+    "Rear Hand Too Low": 77.8,
+    "Chin Up - Head Exposed": 75.6,
+    "Stance Too Narrow": 53.3,
+    "Rear Elbow Flared": 51.1,
+    "Lead Elbow Flared": 44.4,
+    "Feet Crossing - Dangerous Footwork": 20.0,
+    "Trunk Leaning Forward": 15.6,
+    "Stance Too Wide": 6.7,
+    "Trunk Leaning Backward": 6.7
+  },
+  "threshold": 0.45,
+  "margin": 0.04
+}
