@@ -1,26 +1,26 @@
 {
-  "method": "YOLOv8 + ByteTrack/BoT-SORT + MediaPipe pose on bbox crop",
+  "method": "YOLOv8 + CLIP ReID (openai/clip-vit-large-patch14) + MediaPipe pose",
   "frames_analyzed": 10475,
-  "guardado_pose_frames": 2974,
-  "track_lost": 500,
-  "track_recovered": 281,
-  "color_rejected": 3412,
+  "guardado_pose_frames": 6682,
+  "no_match_frames": 600,
+  "no_persons_frames": 0,
+  "similarity_threshold": 0.78,
   "fault_percentages": {
-    "Chin Up - Head Exposed": 91.1,
-    "Lead Hand Too Low": 84.4,
-    "Rear Hand Too Low": 82.2,
-    "Stance Too Narrow": 66.7,
-    "Rear Elbow Flared": 55.6,
-    "Lead Elbow Flared": 48.9,
-    "Trunk Leaning Backward": 37.8,
-    "Stance Too Wide": 20.0,
-    "Feet Crossing - Dangerous Footwork": 13.3
+    "Chin Up - Head Exposed": 88.9,
+    "Lead Hand Too Low": 80.0,
+    "Rear Elbow Flared": 73.3,
+    "Rear Hand Too Low": 71.1,
+    "Lead Elbow Flared": 62.2,
+    "Stance Too Wide": 44.4,
+    "Trunk Leaning Backward": 40.0,
+    "Feet Crossing - Dangerous Footwork": 28.9,
+    "Stance Too Narrow": 28.9,
+    "Trunk Leaning Forward": 4.4
   },
-  "seed_box": [
-    208,
-    163,
-    638,
-    715
+  "seed_frame_times": [
+    130.0
   ],
-  "seed_frame_time": 130.0
+  "seed_boxes": [
+    "208,163,638,715"
+  ]
 }
